@@ -1,59 +1,158 @@
-# MyAngularApp
+# RFM - Angular + Node.js + Fabric.js Canvas Editor
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.1.
+A powerful canvas editor built with Angular 20, Node.js, Express, and Fabric.js. This application provides an interactive canvas interface for creating, editing, and managing graphical content with a full-stack architecture.
 
-## Development server
+## 🚀 Features
 
-To start a local development server, run:
+### Frontend (Angular 20)
+- **Interactive Canvas**: Built with Fabric.js for rich canvas interactions
+- **Shape Creation**: Add rectangles, circles, and text elements
+- **Object Manipulation**: Move, resize, and delete canvas objects
+- **Export Functionality**: Download canvas as PNG images
+- **Responsive Design**: Mobile-friendly interface
+- **Server-Side Rendering (SSR)**: Optimized for performance and SEO
+- **Modern Angular**: Uses standalone components and signals
 
+### Backend (Node.js + Express)
+- **RESTful API**: Well-structured API endpoints
+- **Canvas Management**: Save and retrieve canvas data
+- **CORS Support**: Cross-origin resource sharing enabled
+- **Error Handling**: Comprehensive error management
+- **TypeScript**: Fully typed backend implementation
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Angular 20, TypeScript, Fabric.js, RxJS
+- **Backend**: Node.js, Express.js, TypeScript
+- **Build Tools**: Angular CLI, Webpack
+- **Styling**: CSS3, Flexbox, CSS Grid
+- **Development**: Hot reload, Source maps
+
+## 📦 Installation
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn
+
+### Setup
+1. Clone the repository:
 ```bash
-ng serve
+git clone https://github.com/[your-username]/rfm.git
+cd rfm
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+2. Install dependencies:
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
+3. Build the application:
 ```bash
-ng generate --help
+npm run build
 ```
 
-## Building
-
-To build the project run:
-
+4. Start the server:
 ```bash
-ng build
+npm run serve:ssr:my-angular-app
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The application will be available at `http://localhost:4000`
 
-## Running unit tests
+## 🚀 Development
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
+### Development Server
 ```bash
-ng test
+npm run start:dev
+```
+Runs the Angular development server on `http://localhost:4200`
+
+### Build for Production
+```bash
+npm run build:prod
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
+### Run Tests
 ```bash
-ng e2e
+npm test
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 📚 API Endpoints
 
-## Additional Resources
+### Health Check
+- **GET** `/api/health` - Server health status
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Canvas Operations
+- **POST** `/api/canvas/save` - Save canvas data
+- **GET** `/api/canvas/list` - Get list of saved canvases
+- **GET** `/api/canvas/:id` - Get specific canvas data
+
+## 🎨 Canvas Features
+
+### Available Tools
+- **Add Rectangle**: Create rectangular shapes
+- **Add Circle**: Create circular shapes  
+- **Add Text**: Add text elements
+- **Delete Selected**: Remove selected objects
+- **Clear Canvas**: Clear entire canvas
+- **Save Canvas**: Save to backend
+- **Export PNG**: Download as image
+
+### Canvas Interactions
+- **Click & Drag**: Move objects around
+- **Corner Handles**: Resize objects
+- **Selection**: Click to select objects
+- **Multi-selection**: Select multiple objects
+
+## 🏗️ Project Structure
+
+```
+src/
+├── app/
+│   ├── canvas/              # Canvas component
+│   │   ├── canvas.ts        # Component logic
+│   │   ├── canvas.html      # Template
+│   │   └── canvas.css       # Styles
+│   ├── services/            # Angular services
+│   │   └── api.ts          # API service
+│   ├── app.ts              # Root component
+│   └── app.config.ts       # App configuration
+├── server.ts               # Express server
+└── main.ts                 # Angular bootstrap
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+- `PORT`: Server port (default: 4000)
+
+### Angular Configuration
+- SSR enabled by default
+- HttpClient with fetch API
+- Standalone components architecture
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Commit changes: `git commit -am 'Add feature'`
+4. Push to branch: `git push origin feature-name`
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Angular](https://angular.io/) - The web framework
+- [Fabric.js](http://fabricjs.com/) - Canvas library
+- [Express.js](https://expressjs.com/) - Backend framework
+- [Node.js](https://nodejs.org/) - Runtime environment
+
+## 📞 Support
+
+For support, please open an issue in the GitHub repository or contact the maintainers.
+
+---
+
+**Built with ❤️ using Angular, Node.js, and Fabric.js**
