@@ -1,0 +1,57 @@
+<div class="canvas-container">
+  <div class="toolbar">
+    <h2>Fabric.js Canvas Editor</h2>
+    
+    <div class="controls">
+      <div class="control-group">
+        <label for="canvasName">Canvas Name:</label>
+        <input 
+          id="canvasName" 
+          type="text" 
+          [(ngModel)]="canvasName" 
+          placeholder="Enter canvas name"
+          class="canvas-name-input"
+        />
+      </div>
+
+      <div class="control-group">
+        <button (click)="addRectangle()" class="btn btn-primary">Add Rectangle</button>
+        <button (click)="addCircle()" class="btn btn-primary">Add Circle</button>
+        <button (click)="addText()" class="btn btn-primary">Add Text</button>
+      </div>
+
+      <div class="control-group">
+        <button (click)="deleteSelected()" class="btn btn-danger">Delete Selected</button>
+        <button (click)="clearCanvas()" class="btn btn-warning">Clear Canvas</button>
+      </div>
+
+      <div class="control-group">
+        <button (click)="saveCanvas()" [disabled]="isLoading()" class="btn btn-success">
+          {{ isLoading() ? 'Saving...' : 'Save Canvas' }}
+        </button>
+        <button (click)="exportAsImage()" class="btn btn-info">Export as PNG</button>
+      </div>
+    </div>
+
+    @if (message()) {
+      <div class="message" [class.success]="message().includes('successfully')" [class.error]="message().includes('Error') || message().includes('Failed')">
+        {{ message() }}
+      </div>
+    }
+  </div>
+
+  <div class="canvas-wrapper">
+    <canvas #canvasElement></canvas>
+  </div>
+
+  <div class="instructions">
+    <h3>Instructions:</h3>
+    <ul>
+      <li>Click the buttons above to add shapes and text to the canvas</li>
+      <li>Click and drag objects to move them around</li>
+      <li>Click on objects to select them, then use "Delete Selected" to remove them</li>
+      <li>Use the corner handles to resize objects</li>
+      <li>Save your canvas to the backend or export as an image</li>
+    </ul>
+  </div>
+</div>
