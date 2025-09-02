@@ -1,56 +1,41 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule } from '@angular/router';
-import { AppComponent } from './app.component';
-import { LoginComponent } from './components/login/login';
-import { SignupComponent } from './components/signup/signup';
-import { ApparelComponent } from './components/apparel/apparel';
-import { CustomizationComponent } from './components/customization/customization';
-import { CartComponent } from './components/cart/cart';
-import { SettingsComponent } from './components/settings/settings';
-import { AccountSettingsComponent } from './components/account-settings/account-settings';
-import { LogoutComponent } from './components/logout/logout';
-import { LandingPageComponent } from './components/landing-page/landing-page';
+import { RouterModule, Routes } from '@angular/router';
 
-// Define routes manually here if AppRoutingModule is not generated or if you prefer this approach.
-// If you have an app-routing.module.ts, you would import and use that instead.
-// For this example, let's assume we are defining routes directly here for simplicity or if app-routing.module.ts was not generated.
-// If you generated app-routing.module.ts, ensure it's imported and used correctly.
+// NOTE: This NgModule is not currently used in this application.
+// The app uses standalone components and is bootstrapped via bootstrapApplication() in main.ts
+// This file is kept for reference or potential future migration back to NgModule approach.
 
-// In a typical Angular CLI setup, routes are managed in app-routing.module.ts
-// and imported into app.module.ts. Since we're directly creating files, let's
-// simulate the routing setup.
-
+// Routes are defined in app.routes.ts and used in app.config.ts
+// This is a placeholder route configuration for NgModule compatibility
 const appRoutes: Routes = [
-  { path: '', component: LandingPageComponent },
-  { path: 'apparel', component: ApparelComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'signup', component: SignupComponent },
-  { path: 'customization', component: CustomizationComponent },
-  { path: 'cart', component: CartComponent },
-  { path: 'settings', component: SettingsComponent },
-  { path: 'account-settings', component: AccountSettingsComponent },
-  { path: 'logout', component: LogoutComponent },
+  { path: '', redirectTo: '/landing', pathMatch: 'full' },
+  { path: '**', redirectTo: '/landing' }
 ];
 
 @NgModule({
   declarations: [
-    AppComponent,
-    LoginComponent,
-    SignupComponent,
-    ApparelComponent,
-    CustomizationComponent,
-    CartComponent,
-    SettingsComponent,
-    AccountSettingsComponent,
-    LogoutComponent,
-    LandingPageComponent
+    // No components declared - this app uses standalone components
+    // To use this module, components would need to remove standalone: true
+    // and be declared here instead
   ],
   imports: [
     BrowserModule,
-    RouterModule.forRoot(appRoutes) // Configure routes here
+    RouterModule.forRoot(appRoutes)
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    // Providers are configured in app.config.ts for standalone components
+  ],
+  bootstrap: [
+    // No bootstrap component - app uses bootstrapApplication() instead
+    // To use this module, you would bootstrap a root component here
+  ]
 })
-export class AppModule { }
+export class AppModule { 
+  // This module is not used in the current standalone component architecture
+  // To use this module, you would need to:
+  // 1. Remove standalone: true from all components
+  // 2. Declare all components in this module's declarations array
+  // 3. Change main.ts to use platformBrowserDynamic().bootstrapModule(AppModule)
+  // 4. Remove app.config.ts and move providers here
+}
