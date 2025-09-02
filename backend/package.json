@@ -1,0 +1,39 @@
+{
+  "name": "rfm-backend",
+  "version": "1.0.0",
+  "description": "RFM Canvas Editor Backend API",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "ts-node src/server.ts",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev:watch": "nodemon --exec ts-node src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mysql",
+    "canvas",
+    "fabric.js",
+    "api"
+  ],
+  "author": "RFM Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mysql2": "^3.11.5",
+    "dotenv": "^17.2.1",
+    "cors": "^2.8.5",
+    "body-parser": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/cors": "^2.8.19",
+    "@types/node": "^20.17.19",
+    "typescript": "~5.8.2",
+    "ts-node": "^10.9.2",
+    "nodemon": "^3.1.7"
+  }
+}

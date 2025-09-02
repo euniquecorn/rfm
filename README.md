@@ -33,8 +33,30 @@ A powerful canvas editor built with Angular 20, Node.js, Express, and Fabric.js.
 ### Prerequisites
 - Node.js (v18 or higher)
 - npm or yarn
+- XAMPP (for MySQL database)
 
-### Setup
+### Database Setup
+1. **Install and Start XAMPP:**
+   - Download XAMPP from [https://www.apachefriends.org/](https://www.apachefriends.org/)
+   - Install XAMPP and start the MySQL service
+   - Access phpMyAdmin at `http://localhost/phpmyadmin`
+
+2. **Create Database:**
+   ```sql
+   CREATE DATABASE rfm_db;
+   ```
+
+3. **Configure Environment Variables:**
+   - Copy the `.env` file and update database credentials if needed:
+   ```env
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_USER=root
+   DB_PASSWORD=
+   DB_NAME=rfm_db
+   ```
+
+### Application Setup
 1. Clone the repository:
 ```bash
 git clone https://github.com/[your-username]/rfm.git
@@ -58,6 +80,8 @@ npm run serve:ssr:my-angular-app
 
 The application will be available at `http://localhost:4000`
 
+**Note:** The database tables will be created automatically when the server starts for the first time.
+
 ## 🚀 Development
 
 ### Development Server
@@ -79,12 +103,23 @@ npm test
 ## 📚 API Endpoints
 
 ### Health Check
-- **GET** `/api/health` - Server health status
+- **GET** `/api/health` - Server health status (includes database connectivity)
 
 ### Canvas Operations
-- **POST** `/api/canvas/save` - Save canvas data
-- **GET** `/api/canvas/list` - Get list of saved canvases
-- **GET** `/api/canvas/:id` - Get specific canvas data
+- **POST** `/api/canvas/save` - Save canvas data to MySQL database
+- **GET** `/api/canvas/list` - Get list of saved canvases from database
+- **GET** `/api/canvas/:id` - Get specific canvas data from database
+- **PUT** `/api/canvas/:id` - Update existing canvas in database
+- **DELETE** `/api/canvas/:id` - Delete canvas from database
+
+### API Response Format
+```json
+{
+  "success": true,
+  "message": "Operation successful",
+  "data": { /* response data */ }
+}
+```
 
 ## 🎨 Canvas Features
 
@@ -124,11 +159,36 @@ src/
 
 ### Environment Variables
 - `PORT`: Server port (default: 4000)
+- `DB_HOST`: Database host (default: localhost)
+- `DB_PORT`: Database port (default: 3306)
+- `DB_USER`: Database username (default: root)
+- `DB_PASSWORD`: Database password (default: empty)
+- `DB_NAME`: Database name (default: rfm_db)
+
+### Database Configuration
+- **Engine**: MySQL 8.0+ (via XAMPP)
+- **Connection Pool**: 10 connections
+- **Auto-reconnect**: Enabled
+- **Table Creation**: Automatic on first run
 
 ### Angular Configuration
 - SSR enabled by default
 - HttpClient with fetch API
 - Standalone components architecture
+- Fabric.js integration with dynamic imports
+
+### Database Schema
+```sql
+CREATE TABLE canvases (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  canvas_data JSON NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_name (name),
+  INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
 ## 🤝 Contributing
 
@@ -148,6 +208,33 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Fabric.js](http://fabricjs.com/) - Canvas library
 - [Express.js](https://expressjs.com/) - Backend framework
 - [Node.js](https://nodejs.org/) - Runtime environment
+- [MySQL](https://www.mysql.com/) - Database system
+- [XAMPP](https://www.apachefriends.org/) - Development environment
+
+## 🔧 Troubleshooting
+
+### Database Connection Issues
+1. **ECONNREFUSED Error:**
+   - Ensure XAMPP MySQL service is running
+   - Check if port 3306 is available
+   - Verify database credentials in `.env`
+
+2. **Database Not Found:**
+   - Create the `rfm_db` database in phpMyAdmin
+   - Check database name in `.env` file
+
+3. **Permission Denied:**
+   - Verify MySQL user permissions
+   - Check if root user has access to the database
+
+### Application Issues
+1. **Build Errors:**
+   - Clear node_modules: `rm -rf node_modules && npm install`
+   - Check TypeScript version compatibility
+
+2. **Canvas Not Loading:**
+   - Ensure Fabric.js is properly imported
+   - Check browser console for JavaScript errors
 
 ## 📞 Support
 
