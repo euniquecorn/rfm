@@ -1,9 +1,134 @@
-<!-- Main Content - Landing Page -->
-<div class="container mt-5 text-center">
-    <h1>Welcome to Our Apparel Store!</h1>
-    <p class="lead">Discover unique styles and customize your own apparel.</p>
-    <hr class="my-4">
-    <p>Explore our latest collection or design your own unique piece.</p>
-    <a class="btn btn-primary btn-lg" routerLink="/apparel" role="button">Shop Now</a>
-    <a class="btn btn-success btn-lg" routerLink="/customization" role="button">Customize Your Own</a>
+<div class="gradient-bg">
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light py-3">
+    <div class="container">
+      <!-- Logo -->
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <div class="logo-container me-2">
+          <div class="logo-circle">
+            <span class="logo-text">RFM</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Mobile Menu Toggle -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Navigation Items -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+        
+        <!-- Sign Up Button -->
+        <button class="btn btn-custom-secondary ms-3">Sign Up</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container py-5">
+    <div class="row align-items-center min-vh-75">
+      <!-- Left Content -->
+      <div class="col-lg-6 col-md-12 mb-5 mb-lg-0">
+        <div class="hero-content">
+          <!-- Main Heading -->
+          <h1 class="hero-title mb-4">
+            <span class="title-custom">CUSTOM</span><br>
+            <span class="title-printwear">PRINTWEAR</span>
+          </h1>
+          
+          <!-- Description -->
+          <p class="hero-description mb-4">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do 
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          
+          <!-- Register Button -->
+          <button class="btn btn-custom-primary btn-lg register-btn" routerLink="/signup">
+            Register
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Content - Illustration Area -->
+      <div class="col-lg-6 col-md-12">
+        <div class="illustration-container position-relative">
+          <!-- Background Shapes -->
+          <div class="shape-container">
+            <div class="floating-shape shape-1"></div>
+            <div class="floating-shape shape-2"></div>
+            <div class="floating-shape shape-3"></div>
+          </div>
+          
+          <!-- Main Mockup Container -->
+          <div class="mockup-container">
+            <!-- Design Interface Mockup -->
+            <div class="design-interface">
+              <div class="interface-header">
+                <div class="window-controls">
+                  <span class="control-dot red"></span>
+                  <span class="control-dot yellow"></span>
+                  <span class="control-dot green"></span>
+                </div>
+              </div>
+              <div class="interface-content">
+                <div class="design-preview">
+                  <div class="image-placeholder">
+                    <div class="image-icon"></div>
+                  </div>
+                  <div class="design-tools">
+                    <div class="tool-bar"></div>
+                    <div class="tool-bar short"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- T-shirt Mockup -->
+            <div class="tshirt-mockup">
+              <div class="mockup-header">
+                <div class="window-controls">
+                  <span class="control-dot red"></span>
+                  <span class="control-dot yellow"></span>
+                  <span class="control-dot green"></span>
+                </div>
+              </div>
+              <div class="tshirt-content">
+                <div class="tshirt-image">
+                  <div class="shirt-base"></div>
+                  <div class="shirt-design">Cus</div>
+                </div>
+                <div class="mockup-details">
+                  <div class="detail-line"></div>
+                  <div class="detail-line short"></div>
+                  <div class="detail-line medium"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Character Illustration -->
+          <div class="character-illustration">
+            <div class="character-body"></div>
+            <div class="character-head"></div>
+            <div class="character-arm"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -1,0 +1,406 @@
+/* Landing Page Styles */
+
+/* Navigation Styles */
+.navbar {
+  position: relative;
+  z-index: 1000;
+}
+
+.logo-circle {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #ff8c42, #ff6b2b);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(255, 107, 43, 0.3);
+}
+
+.logo-text {
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+
+.nav-link {
+  color: #6b46c1 !important;
+  font-weight: 500;
+  margin: 0 15px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #4c1d95 !important;
+}
+
+/* Hero Section */
+.min-vh-75 {
+  min-height: 75vh;
+}
+
+.hero-content {
+  padding-right: 2rem;
+}
+
+.hero-title {
+  font-size: 4.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 2rem;
+}
+
+.title-custom {
+  color: #6b46c1;
+  display: block;
+}
+
+.title-printwear {
+  color: #ff8c42;
+  display: block;
+}
+
+.hero-description {
+  color: #6b46c1;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.register-btn {
+  font-size: 1.1rem;
+  padding: 15px 40px;
+}
+
+/* Illustration Container */
+.illustration-container {
+  height: 500px;
+  position: relative;
+}
+
+/* Floating Shapes */
+.shape-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.shape-1 {
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.3);
+  top: 10%;
+  left: 10%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.shape-2 {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 140, 66, 0.3);
+  top: 60%;
+  right: 20%;
+  animation: float 4s ease-in-out infinite reverse;
+}
+
+.shape-3 {
+  width: 80px;
+  height: 80px;
+  background: rgba(107, 70, 193, 0.2);
+  bottom: 20%;
+  left: 30%;
+  animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+/* Mockup Container */
+.mockup-container {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Design Interface Mockup */
+.design-interface {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  width: 280px;
+  height: 200px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+  transform: rotate(-5deg);
+  transition: transform 0.3s ease;
+}
+
+.design-interface:hover {
+  transform: rotate(-5deg) scale(1.05);
+}
+
+.interface-header {
+  background: #ff8c42;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+}
+
+.window-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.control-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.control-dot.red { background: #ff5f57; }
+.control-dot.yellow { background: #ffbd2e; }
+.control-dot.green { background: #28ca42; }
+
+.interface-content {
+  padding: 20px;
+  height: calc(100% - 42px);
+}
+
+.design-preview {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.image-placeholder {
+  background: #e5e7eb;
+  border-radius: 8px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.image-icon {
+  width: 30px;
+  height: 30px;
+  background: #9ca3af;
+  border-radius: 4px;
+}
+
+.design-tools {
+  flex: 1;
+}
+
+.tool-bar {
+  height: 8px;
+  background: #d1d5db;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.tool-bar.short {
+  width: 60%;
+}
+
+/* T-shirt Mockup */
+.tshirt-mockup {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  width: 300px;
+  height: 240px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-left: 50px;
+  overflow: hidden;
+  transform: rotate(3deg);
+  transition: transform 0.3s ease;
+}
+
+.tshirt-mockup:hover {
+  transform: rotate(3deg) scale(1.05);
+}
+
+.mockup-header {
+  background: #6b46c1;
+  padding: 10px 15px;
+}
+
+.tshirt-content {
+  padding: 20px;
+  height: calc(100% - 42px);
+  display: flex;
+  gap: 15px;
+}
+
+.tshirt-image {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.shirt-base {
+  width: 80px;
+  height: 100px;
+  background: #f3f4f6;
+  border-radius: 8px 8px 20px 20px;
+  position: relative;
+}
+
+.shirt-design {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #6b46c1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.mockup-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.detail-line {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+
+.detail-line.short {
+  width: 60%;
+}
+
+.detail-line.medium {
+  width: 80%;
+}
+
+/* Character Illustration */
+.character-illustration {
+  position: absolute;
+  right: -20px;
+  bottom: 0;
+  z-index: 5;
+}
+
+.character-body {
+  width: 60px;
+  height: 120px;
+  background: #10b981;
+  border-radius: 30px 30px 15px 15px;
+  position: relative;
+}
+
+.character-head {
+  width: 40px;
+  height: 40px;
+  background: #fbbf24;
+  border-radius: 50%;
+  position: absolute;
+  top: -20px;
+  left: 10px;
+}
+
+.character-arm {
+  width: 30px;
+  height: 60px;
+  background: #10b981;
+  border-radius: 15px;
+  position: absolute;
+  top: 20px;
+  right: -15px;
+  transform: rotate(-20deg);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .hero-title {
+    font-size: 3.5rem;
+    text-align: center;
+  }
+  
+  .hero-content {
+    padding-right: 0;
+    text-align: center;
+  }
+  
+  .hero-description {
+    max-width: none;
+    margin: 0 auto 2rem;
+  }
+  
+  .illustration-container {
+    margin-top: 3rem;
+    height: 400px;
+  }
+  
+  .tshirt-mockup {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.8rem;
+  }
+  
+  .navbar-nav {
+    text-align: center;
+  }
+  
+  .nav-link {
+    margin: 5px 0;
+  }
+  
+  .design-interface,
+  .tshirt-mockup {
+    width: 250px;
+    height: auto;
+  }
+  
+  .illustration-container {
+    height: 350px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  
+  .hero-description {
+    font-size: 1rem;
+  }
+  
+  .register-btn {
+    font-size: 1rem;
+    padding: 12px 30px;
+  }
+}
