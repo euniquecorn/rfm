@@ -22,7 +22,11 @@
               }
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
+            ],
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ],
             "outputMode": "static"
           },
@@ -76,8 +80,13 @@
               }
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
+            ],
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ]
+            
           }
         }
       }
@@ -87,4 +96,4 @@
     "analytics": "f79b8be5-b925-45e9-bfa8-893ba2d3dc16"
   }
 }
-//sdasds
+

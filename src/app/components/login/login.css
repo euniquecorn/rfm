@@ -1,0 +1,84 @@
+/* Background overlay */
+.login-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Login Card */
+.login-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  padding: 25px 30px;
+  width: 350px;
+  color: #fff;
+}
+
+/* Header */
+.login-header {
+  background: linear-gradient(to right, #ff6f61, #ff9966);
+  border-radius: 10px 10px 0 0;
+  padding: 8px 12px;
+  margin: -25px -30px 20px -30px;
+}
+
+.login-title {
+  font-family: 'Poppins', cursive;
+  font-size: 1.2rem;
+  color: #fff;
+  margin: 0 auto;
+}
+
+.back-btn {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+/* Inputs */
+.form-control {
+  border-radius: 8px;
+  padding: 10px;
+  background: #333;
+  color: #fff;
+  border: none;
+}
+
+.form-control::placeholder {
+  color: #bbb;
+}
+
+/* Button */
+.btn-login {
+  background: linear-gradient(to right, #ff6f61, #ff9966);
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: bold;
+  color: #fff;
+  transition: 0.3s;
+}
+
+.btn-login:hover {
+  opacity: 0.9;
+}
+
+/* Footer */
+.create-account {
+  font-size: 0.9rem;
+  color: #b3c6ff;
+  text-decoration: none;
+}
+
+.create-account:hover {
+  text-decoration: underline;
+}
