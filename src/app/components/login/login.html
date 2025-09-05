@@ -1,26 +1,40 @@
-<!-- Main Content - Login Form -->
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h2 class="text-center mb-4">Login</h2>
-            <form>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Password" required>
-                </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="rememberMe">
-                    <label class="form-check-label" for="rememberMe">Remember me</label>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Login</button>
-            </form>
-            <div class="text-center mt-3">
-                <small>Don't have an account? <a routerLink="/signup">Sign Up</a></small>
-            </div>
-        </div>
+<div class="login-container">
+  <div class="login-card">
+    <!-- Header -->
+    <div class="login-header d-flex align-items-center justify-content-between">
+      <button class="back-btn">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <h2 class="login-title">Sign In</h2>
+      <span></span>
     </div>
+
+    <!-- Form -->
+    <form>
+      <div class="form-group mb-3">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          placeholder="Enter your Email"
+        />
+      </div>
+      <div class="form-group mb-4">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          placeholder="Enter your Password"
+        />
+      </div>
+      <button type="submit" class="btn btn-login w-100">Login</button>
+    </form>
+
+    <!-- Footer -->
+    <div class="login-footer text-center mt-3">
+      <a href="#" class="create-account">Create an Account</a>
+    </div>
+  </div>
 </div>
