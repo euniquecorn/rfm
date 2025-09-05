@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REM - Custom Printwear</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-</head>
-<body>
-    <div class="hero-section">
+<div class="hero-section">
         <div class="floating-shapes">
             <div class="shape shape1"></div>
             <div class="shape shape2"></div>
@@ -128,37 +117,4 @@
                 </div>
             </div>
         </div>
-    </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Add some interactive animations
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate color options
-            const colorOptions = document.querySelectorAll('.color-option');
-            colorOptions.forEach((option, index) => {
-                option.addEventListener('click', function() {
-                    const tshirtMockup = document.querySelector('.tshirt-mockup');
-                    const colors = ['linear-gradient(135deg, #ff6b6b, #ffa500)', 
-                                  'linear-gradient(135deg, #4ecdc4, #44a08d)', 
-                                  'linear-gradient(135deg, #45b7d1, #2196f3)', 
-                                  'linear-gradient(135deg, #96ceb4, #4caf50)'];
-                    tshirtMockup.style.background = colors[index];
-                });
-            });
-            
-            // Add parallax effect to floating shapes
-            window.addEventListener('mousemove', function(e) {
-                const shapes = document.querySelectorAll('.shape');
-                const x = e.clientX / window.innerWidth;
-                const y = e.clientY / window.innerHeight;
-                
-                shapes.forEach((shape, index) => {
-                    const speed = (index + 1) * 0.5;
-                    shape.style.transform = `translate(${x * speed * 10}px, ${y * speed * 10}px)`;
-                });
-            });
-        });
-    </script>
-</body>
-</html>
+</div>
