@@ -12,9 +12,6 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "src/**/*.spec.ts",
-    "src/server.ts",
-    "src/config/database.ts",
-    "src/services/database.service.ts"
+    "src/**/*.spec.ts"
   ]
 }

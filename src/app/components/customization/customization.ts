@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import { CanvasComponent } from '../../canvas/canvas';
 
 @Component({
   selector: 'app-customization',
-  imports: [CanvasComponent],
+  imports: [],
   templateUrl: './customization.html',
   styleUrl: './customization.css'
 })
