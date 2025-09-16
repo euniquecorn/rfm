@@ -1,0 +1,131 @@
+<div class="options-panel">
+  <!-- Shirt Options -->
+  <div class="options-section">
+    <h3>Shirt Options</h3>
+    
+    <!-- Color Selection -->
+    <div class="color-selection">
+      <div class="color-grid">
+        <button 
+          *ngFor="let color of shirtColors()" 
+          class="color-option"
+          [class.selected]="color.isSelected"
+          [style.background-color]="color.value"
+          [title]="color.name"
+          (click)="selectColor(color)">
+        </button>
+      </div>
+    </div>
+    
+    <!-- Size Selection -->
+    <div class="size-section">
+      <h4>Size</h4>
+      <select class="size-dropdown" [value]="getSelectedSizeId()" (change)="onSizeChange($event)">
+        <option *ngFor="let size of sizes()" [value]="size.id">{{ size.label }}</option>
+      </select>
+    </div>
+  </div>
+  
+  <!-- Text Options -->
+  <div class="options-section">
+    <h3>Text Options</h3>
+    
+    <!-- Font Family -->
+    <div class="text-control">
+      <select class="text-dropdown" 
+              [value]="textOptions().fontFamily"
+              (change)="updateTextStyle('fontFamily', $any($event).target.value)">
+        <option *ngFor="let font of fontFamilies" [value]="font">{{ font }}</option>
+      </select>
+    </div>
+    
+    <!-- Text Styling -->
+    <div class="text-styling">
+      <button class="style-btn" 
+              [class.active]="textOptions().isBold"
+              (click)="toggleTextStyle('isBold')">
+        <strong>B</strong>
+      </button>
+      <button class="style-btn" 
+              [class.active]="textOptions().isItalic"
+              (click)="toggleTextStyle('isItalic')">
+        <em>I</em>
+      </button>
+      <button class="style-btn" 
+              [class.active]="textOptions().isUnderline"
+              (click)="toggleTextStyle('isUnderline')">
+        <u>U</u>
+      </button>
+    </div>
+    
+    <!-- Text Colors -->
+    <div class="text-colors">
+      <button 
+        *ngFor="let color of textColors" 
+        class="text-color-option"
+        [class.selected]="textOptions().color === color"
+        [style.background-color]="color"
+        (click)="updateTextStyle('color', color)">
+      </button>
+    </div>
+    
+    <!-- Letter Spacing -->
+    <div class="letter-spacing">
+      <h4>Letter spacing</h4>
+      <div class="spacing-options">
+        <button 
+          *ngFor="let spacing of letterSpacingOptions"
+          class="spacing-btn"
+          [class.active]="textOptions().letterSpacing === spacing.value"
+          [style.background-color]="textOptions().letterSpacing === spacing.value ? '#333' : 'transparent'"
+          (click)="updateTextStyle('letterSpacing', spacing.value)">
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Image Options -->
+  <div class="options-section">
+    <h3>Image Options</h3>
+    <div class="image-controls">
+      <button 
+        *ngFor="let control of imageControls" 
+        class="image-control-btn"
+        [title]="control.label">
+        {{ control.icon }}
+      </button>
+    </div>
+  </div>
+  
+  <!-- Dynamic Price Calculator -->
+  <div class="price-section">
+    <h3>Dynamic Price Calculator</h3>
+    
+    <div class="price-details">
+      <div class="price-row">
+        <span class="price-label">₱{{ basePrice.toFixed(2) }}</span>
+      </div>
+      
+      <div class="quantity-section">
+        <label class="quantity-label">Based on quantity</label>
+        <div class="quantity-controls">
+          <button class="qty-btn" (click)="updateQuantity(quantity() - 1)">-</button>
+          <span class="quantity">{{ quantity() }}</span>
+          <button class="qty-btn" (click)="updateQuantity(quantity() + 1)">+</button>
+        </div>
+        <span class="discount-info">{{ (discount() * 100).toFixed(0) }}% off</span>
+      </div>
+      
+      <div class="compatibility-info">
+        <small>Auchie icompatibility</small>
+      </div>
+    </div>
+    
+    <div class="final-price">
+      <div class="shipping-center">
+        <span class="shipping-label">Shipping center</span>
+        <span class="shipping-price">₱100.00</span>
+      </div>
+    </div>
+  </div>
+</div>

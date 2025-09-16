@@ -1,0 +1,271 @@
+.product-preview {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+}
+
+.preview-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  justify-content: flex-start;
+}
+
+.control-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #666;
+}
+
+.control-btn:hover {
+  background: #f8f9fa;
+  color: #333;
+  border-color: #ccc;
+}
+
+.control-btn:active {
+  transform: scale(0.95);
+}
+
+.tshirt-preview {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  min-height: 400px;
+}
+
+.tshirt-container {
+  position: relative;
+  width: 320px;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tshirt-base {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.tshirt-shape {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+/* T-Shirt Structure */
+.collar {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 20px;
+  background: inherit;
+  border-radius: 30px 30px 0 0;
+  border: 2px solid #e0e0e0;
+  border-bottom: none;
+  z-index: 2;
+}
+
+.sleeve {
+  position: absolute;
+  top: 30px;
+  width: 50px;
+  height: 80px;
+  background: inherit;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px;
+}
+
+.sleeve-left {
+  left: -25px;
+  transform: rotate(-10deg);
+}
+
+.sleeve-right {
+  right: -25px;
+  transform: rotate(10deg);
+}
+
+.body {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  right: 25px;
+  bottom: 0;
+  background: inherit;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px 8px 0 0;
+  z-index: 1;
+}
+
+/* Design Area */
+.design-area {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 200px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.design-bounds {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed #007bff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 123, 255, 0.05);
+  position: relative;
+}
+
+.canvas-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.placeholder-text {
+  color: #007bff;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.design-preview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.design-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* View Switcher */
+.view-switcher {
+  display: flex;
+  gap: 4px;
+  background: #f8f9fa;
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.view-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.view-btn:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.view-btn.active {
+  background: #007bff;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+/* Color Variations */
+.tshirt-base[style*="background-color: #000"],
+.tshirt-base[style*="background-color: black"] {
+  .collar,
+  .sleeve,
+  .body {
+    border-color: #333;
+  }
+}
+
+.tshirt-base[style*="background-color: #fff"],
+.tshirt-base[style*="background-color: white"] {
+  .collar,
+  .sleeve,
+  .body {
+    border-color: #e0e0e0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-preview {
+    padding: 16px;
+  }
+  
+  .tshirt-container {
+    width: 280px;
+    height: 330px;
+  }
+  
+  .design-area {
+    width: 150px;
+    height: 170px;
+  }
+  
+  .view-switcher {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .view-btn {
+    flex-shrink: 0;
+    min-width: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tshirt-container {
+    width: 240px;
+    height: 290px;
+  }
+  
+  .design-area {
+    width: 130px;
+    height: 150px;
+  }
+}
