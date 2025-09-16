@@ -1,0 +1,62 @@
+<div class="product-preview">
+  <!-- Preview Controls -->
+  <div class="preview-controls">
+    <button class="control-btn" (click)="undo()" title="Undo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 7v6h6"></path>
+        <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"></path>
+      </svg>
+    </button>
+    <button class="control-btn" (click)="redo()" title="Redo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 7v6h-6"></path>
+        <path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3-2.3"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- T-Shirt Preview -->
+  <div class="tshirt-preview">
+    <div class="tshirt-container">
+      <!-- T-Shirt Base -->
+      <div class="tshirt-base" [style.background-color]="selectedColor">
+        <!-- T-Shirt Shape -->
+        <div class="tshirt-shape">
+          <!-- Collar -->
+          <div class="collar"></div>
+          <!-- Sleeves -->
+          <div class="sleeve sleeve-left"></div>
+          <div class="sleeve sleeve-right"></div>
+          <!-- Body -->
+          <div class="body"></div>
+        </div>
+        
+        <!-- Design Area -->
+        <div class="design-area">
+          <div class="design-bounds">
+            <!-- This is where the Fabric.js canvas will be integrated -->
+            <div class="canvas-placeholder" *ngIf="!designImageUrl()">
+              <span class="placeholder-text">Design Area</span>
+            </div>
+            
+            <!-- Uploaded Design Preview -->
+            <div class="design-preview" *ngIf="designImageUrl()">
+              <img [src]="designImageUrl()" alt="Design Preview" class="design-image">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Switcher -->
+  <div class="view-switcher">
+    <button 
+      *ngFor="let view of views()" 
+      class="view-btn"
+      [class.active]="view.isActive"
+      (click)="selectView(view.id)">
+      {{ view.name }}
+    </button>
+  </div>
+</div>
