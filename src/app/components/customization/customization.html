@@ -1,7 +1,64 @@
-<!-- Main Content - Customization Page -->
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Customize Your Apparel</h2>
-    
-    <!-- Integrated Fabric.js Canvas Editor -->
-    <app-canvas></app-canvas>
+<div class="customization-container">
+  <!-- Header -->
+  <header class="customization-header">
+    <div class="brand-section">
+      <div class="logo">
+        <span class="logo-text">Apparels</span>
+        <span class="logo-subtext">Desings</span>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <a href="#" class="nav-link">About</a>
+      <a href="#" class="nav-link">Services</a>
+      <a href="#" class="nav-link">Contact</a>
+    </nav>
+    <div class="user-section">
+      <div class="user-avatar"></div>
+      <div class="favorites-icon">♡</div>
+    </div>
+  </header>
+
+  <!-- Main Customization Interface -->
+  <div class="customization-main">
+    <!-- Left Panel - Upload & Templates -->
+    <div class="left-panel">
+      <app-upload-panel 
+        (imageUploaded)="onImageUploaded($event)"
+        (templateSelected)="onTemplateSelected($event)">
+      </app-upload-panel>
+    </div>
+
+    <!-- Center Panel - Product Preview -->
+    <div class="center-panel">
+      <app-product-preview
+        [selectedColor]="selectedShirtColor()"
+        [designImage]="uploadedImage()"
+        [activeView]="activeProductView()"
+        (viewChanged)="onViewChanged($event)">
+      </app-product-preview>
+    </div>
+
+    <!-- Right Panel - Options & Pricing -->
+    <div class="right-panel">
+      <app-options-panel
+        [basePrice]="basePrice()"
+        (colorChanged)="onColorChanged($event)"
+        (sizeChanged)="onSizeChanged($event)"
+        (textOptionsChanged)="onTextOptionsChanged($event)"
+        (priceUpdated)="onPriceUpdated($event)">
+      </app-options-panel>
+    </div>
+  </div>
+
+  <!-- Bottom Action Bar -->
+  <div class="action-bar">
+    <div class="shipping-info">
+      <span class="shipping-label">Shipping center</span>
+      <span class="shipping-price">₱100.00</span>
+    </div>
+    <div class="action-buttons">
+      <button class="btn btn-secondary" (click)="addToCart()">Add to Cart</button>
+      <button class="btn btn-primary" (click)="buyNow()">Buy Now</button>
+    </div>
+  </div>
 </div>
