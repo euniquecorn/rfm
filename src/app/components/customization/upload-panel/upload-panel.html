@@ -1,0 +1,77 @@
+<div class="upload-panel">
+  <!-- Upload Section -->
+  <div class="upload-section">
+    <div class="upload-header">
+      <h3>Upload Image / Logo</h3>
+      <i class="expand-icon">></i>
+    </div>
+    
+    <div class="upload-area"
+         [class.drag-over]="isDragOver()"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave($event)"
+         (drop)="onDrop($event)"
+         (click)="fileInput.click()">
+      <div class="upload-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7,10 12,15 17,10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+      </div>
+      <div class="upload-text">
+        <p class="main-text">Drag & Drop or Browse</p>
+      </div>
+      <input #fileInput type="file" hidden (change)="onFileInput($event)" 
+             accept="image/jpeg,image/jpg,image/png,image/svg+xml">
+    </div>
+    
+    <!-- Supported Formats -->
+    <div class="supported-formats">
+      <p class="format-label">Supported File Formats</p>
+      <p class="format-list">{{ supportedFormats.join(', ') }}</p>
+    </div>
+    
+    <!-- Processing Options -->
+    <div class="processing-options">
+      <div class="option-item">
+        <div class="option-toggle" 
+             [class.active]="removeBackground()"
+             (click)="toggleRemoveBackground()">
+          <span class="toggle-dot"></span>
+        </div>
+        <label class="option-label">Remove Background</label>
+      </div>
+      
+      <div class="option-item">
+        <div class="option-toggle" 
+             [class.active]="enhanceQuality()"
+             (click)="toggleEnhanceQuality()">
+          <span class="toggle-dot"></span>
+        </div>
+        <label class="option-label">Enhance Image Quality</label>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Design Templates Section -->
+  <div class="templates-section">
+    <h3>Design Templates</h3>
+    
+    <div class="template-grid">
+      <div class="template-item" (click)="selectTemplate('sports')">
+        <div class="template-preview sports-template">
+          <div class="template-content">Sports</div>
+        </div>
+        <p class="template-name">Sports</p>
+      </div>
+      
+      <div class="template-item" (click)="selectTemplate('minimal')">
+        <div class="template-preview minimal-template">
+          <div class="template-content">Minimal</div>
+        </div>
+        <p class="template-name">Minimal</p>
+      </div>
+    </div>
+  </div>
+</div>
