@@ -88,16 +88,19 @@ export class OptionsPanelComponent implements OnInit {
 
   // Image Options
   protected imageControls = [
-    { icon: '🔒', label: 'Lock aspect ratio' },
-    { icon: '📋', label: 'Copy' },
-    { icon: '🗑️', label: 'Delete' },
-    { icon: '📤', label: 'Export' },
-    { icon: '🔗', label: 'Link' }
+    { icon: '🔒', label: 'Lock aspect ratio', action: 'lock' },
+    { icon: '📋', label: 'Copy', action: 'copy' },
+    { icon: '🗑️', label: 'Delete', action: 'delete' },
+    { icon: '📤', label: 'Export', action: 'export' },
+    { icon: '🔗', label: 'Link', action: 'link' }
   ];
+
+  protected lockAspectRatio = signal(false);
 
   // Pricing
   protected quantity = signal(1);
   protected discount = signal(0.10); // 10% off
+  protected calculatedPrice = signal<PriceBreakdown | null>(null);
 
   selectColor(color: ColorOption): void {
     const updatedColors = this.shirtColors().map(c => ({
@@ -152,6 +155,7 @@ export class OptionsPanelComponent implements OnInit {
       finalPrice: finalPrice
     };
     
+    this.calculatedPrice.set(priceBreakdown);
     this.priceUpdated.emit(priceBreakdown);
   }
 
@@ -167,6 +171,42 @@ export class OptionsPanelComponent implements OnInit {
     if (selectedSize) {
       this.selectSize(selectedSize);
     }
+  }
+
+  onImageControlClick(action: string): void {
+    switch (action) {
+      case 'lock':
+        this.lockAspectRatio.set(!this.lockAspectRatio());
+        break;
+      case 'copy':
+        console.log('Copy image');
+        break;
+      case 'delete':
+        console.log('Delete image');
+        break;
+      case 'export':
+        console.log('Export image');
+        break;
+      case 'link':
+        console.log('Link image');
+        break;
+    }
+  }
+
+  // Font size control
+  updateFontSize(size: number): void {
+    const current = this.textOptions();
+    const updated = { ...current, fontSize: Math.max(8, Math.min(72, size)) };
+    this.textOptions.set(updated);
+    this.textOptionsChanged.emit(updated);
+  }
+
+  increaseFontSize(): void {
+    this.updateFontSize(this.textOptions().fontSize + 2);
+  }
+
+  decreaseFontSize(): void {
+    this.updateFontSize(this.textOptions().fontSize - 2);
   }
 
   // Initialize price calculation

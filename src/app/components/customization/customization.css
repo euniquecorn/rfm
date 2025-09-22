@@ -182,7 +182,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 120px;
+  min-width: 100px;
 }
 
 .btn-secondary {
@@ -211,6 +211,19 @@
 
 .btn:active {
   transform: translateY(0);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.btn-outline:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+  color: #495057;
+  transform: translateY(-1px);
 }
 
 /* Responsive Design */
