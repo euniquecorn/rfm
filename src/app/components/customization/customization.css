@@ -6,91 +6,6 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Header */
-.customization-header {
-  background: white;
-  padding: 16px 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #e9ecef;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.brand-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.logo-text {
-  font-size: 24px;
-  font-weight: 700;
-  color: #ff6600;
-  line-height: 1;
-}
-
-.logo-subtext {
-  font-size: 16px;
-  font-weight: 400;
-  color: #333;
-  line-height: 1;
-  margin-top: -2px;
-}
-
-.main-nav {
-  display: flex;
-  gap: 32px;
-  align-items: center;
-}
-
-.nav-link {
-  color: #333;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 16px;
-  transition: color 0.2s ease;
-  cursor: pointer;
-}
-
-.nav-link:hover {
-  color: #ff6600;
-}
-
-.user-section {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.user-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  cursor: pointer;
-}
-
-.favorites-icon {
-  font-size: 20px;
-  color: #666;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.favorites-icon:hover {
-  color: #ff6600;
-}
-
 /* Main Customization Interface */
 .customization-main {
   flex: 1;
@@ -98,7 +13,7 @@
   grid-template-columns: 320px 1fr 320px;
   gap: 20px;
   padding: 20px;
-  min-height: calc(100vh - 140px);
+  min-height: calc(100vh - 80px);
 }
 
 .left-panel {
@@ -107,9 +22,9 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   height: fit-content;
-  max-height: calc(100vh - 160px);
+  max-height: calc(100vh - 100px);
   position: sticky;
-  top: 100px;
+  top: 20px;
 }
 
 .center-panel {
@@ -127,9 +42,9 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   height: fit-content;
-  max-height: calc(100vh - 160px);
+  max-height: calc(100vh - 100px);
   position: sticky;
-  top: 100px;
+  top: 20px;
 }
 
 /* Action Bar */

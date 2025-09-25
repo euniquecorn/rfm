@@ -1,0 +1,47 @@
+<div class="admin-container">
+  <!-- Header -->
+  <header class="admin-header">
+    <div class="header-center">
+      <button class="menu-toggle">☰</button>
+      <h1 class="page-title">{{currentPage}}</h1>
+    </div>
+    
+    <div class="header-right">
+      <div class="admin-profile">
+        <span class="admin-label">Administrator</span>
+        <div class="profile-avatar"></div>
+        <button class="profile-dropdown" (click)="logout()">▼</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo-section">
+      <div class="logo">
+        <div class="logo-icon">👕</div>
+        <div class="logo-text">
+          <span class="brand">Apparels</span>
+          <span class="tagline">& Designs</span>
+        </div>
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <ul class="nav-menu">
+        <li *ngFor="let item of menuItems"
+            class="nav-item"
+            [class.active]="currentPage === item.name"
+            (click)="navigateTo(item)">
+          <span class="nav-icon">{{item.icon}}</span>
+          <span class="nav-label">{{item.name}}</span>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
