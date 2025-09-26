@@ -16,6 +16,9 @@ export class UploadPanelComponent {
   protected supportedFormats = ['JPG', 'PNG', 'SVG'];
   protected removeBackground = signal(true);
   protected enhanceQuality = signal(false);
+  protected uploadedFile = signal<File | null>(null);
+  protected uploadedImageUrl = signal<string | null>(null);
+  protected isUploading = signal(false);
 
   onDragOver(event: DragEvent): void {
     event.preventDefault();
@@ -52,7 +55,24 @@ export class UploadPanelComponent {
       return;
     }
 
-    this.imageUploaded.emit(file);
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    this.isUploading.set(true);
+    this.uploadedFile.set(file);
+
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.uploadedImageUrl.set(e.target?.result as string);
+      this.isUploading.set(false);
+      this.imageUploaded.emit(file);
+    };
+    reader.readAsDataURL(file);
   }
 
   selectTemplate(template: string): void {
@@ -66,4 +86,17 @@ export class UploadPanelComponent {
   toggleEnhanceQuality(): void {
     this.enhanceQuality.set(!this.enhanceQuality());
   }
+
+  removeUploadedImage(): void {
+    this.uploadedFile.set(null);
+    this.uploadedImageUrl.set(null);
+  }
+
+  // Template data
+  protected templates = [
+    { id: 'sports', name: 'Sports', preview: 'Athletic design template' },
+    { id: 'minimal', name: 'Minimal', preview: 'Clean and simple template' },
+    { id: 'vintage', name: 'Vintage', preview: 'Retro style template' },
+    { id: 'modern', name: 'Modern', preview: 'Contemporary design template' }
+  ];
 }
