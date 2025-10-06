@@ -3,6 +3,7 @@ import cors = require('cors');
 import bodyParser = require('body-parser');
 import { closeDatabase, initializeDatabase, testConnection } from './config/database';
 import canvasRoutes from './routes/canvas.routes';
+import userRoutes from './routes/user.routes';
 import { DatabaseService } from './services/database.service';
 
 const app = express();
@@ -34,6 +35,7 @@ app.get('/api/health', async (req: express.Request, res: express.Response) => {
 
 // API Routes
 app.use('/api/canvas', canvasRoutes);
+app.use('/users', userRoutes);
 
 // Default route
 app.get('/', (req: express.Request, res: express.Response) => {
@@ -42,6 +44,10 @@ app.get('/', (req: express.Request, res: express.Response) => {
     version: '1.0.0',
     endpoints: {
       health: '/api/health',
+      users: {
+        signup: 'POST /users',
+        login: 'POST /users/login'
+      },
       canvas: {
         save: 'POST /api/canvas/save',
         list: 'GET /api/canvas/list',

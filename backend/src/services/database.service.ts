@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { pool } from '../config/database';
 
@@ -5,6 +6,15 @@ export interface CanvasData {
   id?: number;
   name: string;
   canvas_data?: any;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface UserData {
+  id?: number;
+  username: string;
+  email: string;
+  password?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -17,6 +27,127 @@ export interface ApiResponse<T = any> {
 }
 
 export class DatabaseService {
+  
+  // Create new user account
+  static async createUser(userData: { username: string; email: string; password: string }): Promise<ApiResponse<UserData>> {
+    try {
+      const connection = await pool.getConnection();
+      
+      // Check if username or email already exists
+      const checkQuery = `
+        SELECT id FROM users
+        WHERE username = ? OR email = ?
+      `;
+      
+      const [existingUsers] = await connection.execute<RowDataPacket[]>(
+        checkQuery,
+        [userData.username, userData.email]
+      );
+      
+      if (existingUsers.length > 0) {
+        connection.release();
+        return {
+          success: false,
+          message: 'Username or email already exists'
+        };
+      }
+      
+      // Hash the password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+      
+      // Insert new user
+      const insertQuery = `
+        INSERT INTO users (username, email, password)
+        VALUES (?, ?, ?)
+      `;
+      
+      const [result] = await connection.execute<ResultSetHeader>(
+        insertQuery,
+        [userData.username, userData.email, hashedPassword]
+      );
+      
+      connection.release();
+      
+      if (result.affectedRows > 0) {
+        return {
+          success: true,
+          message: 'User created successfully',
+          data: {
+            id: result.insertId,
+            username: userData.username,
+            email: userData.email,
+            created_at: new Date().toISOString()
+          }
+        };
+      } else {
+        return {
+          success: false,
+          message: 'Failed to create user'
+        };
+      }
+    } catch (error) {
+      console.error('Database error in createUser:', error);
+      return {
+        success: false,
+        message: 'Database error occurred',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  // Get user by username or email (for login)
+  static async getUserByCredentials(usernameOrEmail: string): Promise<ApiResponse<UserData>> {
+    try {
+      const connection = await pool.getConnection();
+      
+      const query = `
+        SELECT id, username, email, password, created_at, updated_at
+        FROM users
+        WHERE username = ? OR email = ?
+      `;
+      
+      const [rows] = await connection.execute<RowDataPacket[]>(query, [usernameOrEmail, usernameOrEmail]);
+      connection.release();
+      
+      if (rows.length === 0) {
+        return {
+          success: false,
+          message: 'User not found'
+        };
+      }
+      
+      const user = rows[0];
+      return {
+        success: true,
+        data: {
+          id: user['id'],
+          username: user['username'],
+          email: user['email'],
+          password: user['password'], // Include for password verification
+          created_at: user['created_at'],
+          updated_at: user['updated_at']
+        }
+      };
+    } catch (error) {
+      console.error('Database error in getUserByCredentials:', error);
+      return {
+        success: false,
+        message: 'Failed to fetch user',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  // Verify user password
+  static async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    try {
+      return await bcrypt.compare(plainPassword, hashedPassword);
+    } catch (error) {
+      console.error('Password verification error:', error);
+      return false;
+    }
+  }
   
   // Save canvas data to database
   static async saveCanvas(canvasData: any, name: string): Promise<ApiResponse<CanvasData>> {

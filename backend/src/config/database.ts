@@ -47,6 +47,21 @@ export async function initializeDatabase(): Promise<void> {
   try {
     const connection = await pool.getConnection();
     
+    // Create users table if it doesn't exist
+    const createUsersTable = `
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        email VARCHAR(100) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_username (username),
+        INDEX idx_email (email),
+        INDEX idx_created_at (created_at)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `;
+    
     // Create canvases table if it doesn't exist
     const createCanvasesTable = `
       CREATE TABLE IF NOT EXISTS canvases (
@@ -60,6 +75,7 @@ export async function initializeDatabase(): Promise<void> {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `;
     
+    await connection.execute(createUsersTable);
     await connection.execute(createCanvasesTable);
     console.log('✅ Database tables initialized successfully');
     

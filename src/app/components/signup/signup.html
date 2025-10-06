@@ -1,30 +1,61 @@
-<!-- Main Content - Sign Up Form -->
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h2 class="text-center mb-4">Sign Up</h2>
-            <form>
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Password" required>
-                </div>
-                <div class="mb-3">
-                    <label for="confirmPassword" class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Sign Up</button>
-            </form>
-            <div class="text-center mt-3">
-                <small>Already have an account? <a routerLink="/login">Login</a></small>
-            </div>
+<form (ngSubmit)="onSubmit()" #signupForm="ngForm" novalidate>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="alert alert-success text-center">
+        {{ successMessage }}
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-danger text-center">
+        {{ errorMessage }}
+    </div>
+
+    <!-- Username -->
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" placeholder="Enter your username" [(ngModel)]="username"
+            name="username" required minlength="3" #usernameField="ngModel">
+        <div class="text-danger mt-1" *ngIf="usernameField.invalid && (usernameField.dirty || usernameField.touched)">
+            <small *ngIf="usernameField.errors?.['required']">Username is required.</small>
+            <small *ngIf="usernameField.errors?.['minlength']">Username must be at least 3 characters.</small>
         </div>
     </div>
-</div>
+
+    <!-- Email -->
+    <div class="mb-3">
+        <label for="email" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="email" placeholder="name@example.com" [(ngModel)]="email"
+            name="email" required email #emailField="ngModel">
+        <div class="text-danger mt-1" *ngIf="emailField.invalid && (emailField.dirty || emailField.touched)">
+            <small *ngIf="emailField.errors?.['required']">Email is required.</small>
+            <small *ngIf="emailField.errors?.['email']">Please enter a valid email.</small>
+        </div>
+    </div>
+
+    <!-- Password -->
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Password" [(ngModel)]="password"
+            name="password" required minlength="6" #passwordField="ngModel">
+        <div class="text-danger mt-1" *ngIf="passwordField.invalid && (passwordField.dirty || passwordField.touched)">
+            <small *ngIf="passwordField.errors?.['required']">Password is required.</small>
+            <small *ngIf="passwordField.errors?.['minlength']">Password must be at least 6 characters.</small>
+        </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="mb-3">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password"
+            [(ngModel)]="confirmPassword" name="confirmPassword" required #confirmPasswordField="ngModel">
+        <div class="text-danger mt-1" *ngIf="confirmPasswordField.touched && (password !== confirmPassword)">
+            <small>Passwords do not match.</small>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary w-100" [disabled]="signupForm.invalid || password !== confirmPassword">
+        Sign Up
+    </button>
+
+</form>
