@@ -16,6 +16,7 @@ export class AdminLayoutComponent {
     { name: 'Dashboard', icon: '📊', route: '/admin/dashboard' },
     { name: 'Orders', icon: '🛒', route: '/admin/orders' },
     { name: 'Products', icon: '📦', route: '/admin/products' },
+    { name: 'Employees', icon: '👥', route: '/admin/employees' },
     { name: 'Mock-ups', icon: '🎨', route: '/admin/mockups' },
     { name: 'Cash flow', icon: '💰', route: '/admin/cashflow' },
     { name: 'Reports', icon: '📈', route: '/admin/reports' }
