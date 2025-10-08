@@ -2,6 +2,66 @@
   <!-- Header Section -->
   <div class="employees-header">
     <h1 class="page-title">Employee Management</h1>
+    <button class="btn btn-primary" (click)="toggleAddForm()">
+      <span class="add-icon">➕</span>
+      Add an Employee
+    </button>
+  </div>
+
+  <!-- Add Employee Form Card -->
+  <div *ngIf="showAddForm" class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Add New Employee</h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">First Name *</label>
+          <input type="text" class="form-control" [(ngModel)]="newEmployeeForm.firstName" placeholder="First Name">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Middle Name</label>
+          <input type="text" class="form-control" [(ngModel)]="newEmployeeForm.middleName" placeholder="Middle Name">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Last Name *</label>
+          <input type="text" class="form-control" [(ngModel)]="newEmployeeForm.lastName" placeholder="Last Name">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Email *</label>
+          <input type="email" class="form-control" [(ngModel)]="newEmployeeForm.email" placeholder="email@example.com">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" class="form-control" [(ngModel)]="newEmployeeForm.phone" placeholder="+63 XXX XXX XXXX">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Roles *</label>
+          <div class="roles-selector">
+            <button 
+              *ngFor="let role of availableRoles" 
+              type="button"
+              class="btn btn-sm me-1 mb-1"
+              [class.btn-primary]="isRoleSelected(role, 'add')"
+              [class.btn-outline-primary]="!isRoleSelected(role, 'add')"
+              (click)="toggleRole(role, 'add')">
+              {{ role }}
+            </button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Status</label>
+          <select class="form-select" [(ngModel)]="newEmployeeForm.status">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt-3 d-flex justify-content-end gap-2">
+        <button class="btn btn-secondary" (click)="cancelAdd()">Cancel</button>
+        <button class="btn btn-success" (click)="addEmployee()">Add Employee</button>
+      </div>
+    </div>
   </div>
 
   <!-- Loading State -->
@@ -31,74 +91,134 @@
 
     <!-- Employees Grid -->
     <div *ngIf="employees.length > 0" class="employees-grid">
-      <div *ngFor="let employee of employees" class="employee-card">
-        <!-- Header with Name and Status -->
-        <div class="employee-header">
-          <h3 class="employee-name">{{ getFullName(employee) }}</h3>
-          <span
-            class="status-badge"
-            [class.status-inactive]="employee.status === 'Inactive'">
-            {{ employee.status }}
-          </span>
+      <div *ngFor="let employee of employees">
+        
+        <!-- View Mode Card -->
+        <div *ngIf="editingEmployeeId !== employee.id" class="card shadow-sm employee-card">
+          <div class="card-body">
+            <!-- Header with Name and Status -->
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <h5 class="card-title mb-0">{{ getFullName(employee) }}</h5>
+              <span
+                class="badge"
+                [class.bg-success]="employee.status === 'Active'"
+                [class.bg-danger]="employee.status === 'Inactive'">
+                {{ employee.status }}
+              </span>
+            </div>
+
+            <!-- User ID -->
+            <div *ngIf="employee.id" class="text-muted small mb-2">
+              ID: {{ employee.id }}
+            </div>
+
+            <!-- Contact Info -->
+            <div class="contact-info mb-3">
+              <div class="d-flex align-items-center mb-2">
+                <span class="me-2">✉️</span>
+                <span class="text-muted">{{ employee.email }}</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <span class="me-2">📞</span>
+                <span class="text-muted">{{ employee.phone || 'N/A' }}</span>
+              </div>
+            </div>
+
+            <!-- Roles Section -->
+            <div class="mb-3">
+              <div class="small fw-bold mb-2">Roles:</div>
+              <div class="d-flex flex-wrap gap-1">
+                <span 
+                  *ngFor="let role of employee.roles" 
+                  class="badge"
+                  [ngClass]="getRoleClass(role)">
+                  {{ role }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Employee Details -->
+            <div class="border-top pt-3">
+              <div class="row small text-muted mb-2">
+                <div class="col-4 fw-bold">Hired:</div>
+                <div class="col-8">{{ formatDate(employee.hiredDate) }}</div>
+              </div>
+              <div class="row small text-muted mb-2">
+                <div class="col-4 fw-bold">Last login:</div>
+                <div class="col-8" [class.text-danger]="!employee.lastLogin">
+                  {{ formatDateTime(employee.lastLogin) }}
+                </div>
+              </div>
+              <div class="row small text-muted mb-3">
+                <div class="col-4 fw-bold">Created:</div>
+                <div class="col-8">{{ formatDate(employee.created_at) }}</div>
+              </div>
+              
+              <!-- Edit Button -->
+              <button class="btn btn-primary btn-sm w-100" (click)="onEditEmployee(employee)">
+                <span class="me-1">✏️</span>
+                Click to Edit
+              </button>
+            </div>
+          </div>
         </div>
 
-        <!-- User ID (if needed for reference) -->
-        <div class="user-id" *ngIf="employee.id" style="font-size: 12px; color: #999; margin-bottom: 10px;">
-          ID: {{ employee.id }}
+        <!-- Edit Mode Card -->
+        <div *ngIf="editingEmployeeId === employee.id" class="card shadow employee-card-edit">
+          <div class="card-header bg-warning">
+            <h5 class="mb-0">Editing: {{ getFullName(employee) }}</h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">First Name *</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="editForm.firstName">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Middle Name</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="editForm.middleName">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Last Name *</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="editForm.lastName">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email *</label>
+                <input type="email" class="form-control form-control-sm" [(ngModel)]="editForm.email">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" class="form-control form-control-sm" [(ngModel)]="editForm.phone">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Roles *</label>
+                <div class="roles-selector">
+                  <button 
+                    *ngFor="let role of availableRoles" 
+                    type="button"
+                    class="btn btn-sm me-1 mb-1"
+                    [class.btn-primary]="isRoleSelected(role, 'edit')"
+                    [class.btn-outline-primary]="!isRoleSelected(role, 'edit')"
+                    (click)="toggleRole(role, 'edit')">
+                    {{ role }}
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Status</label>
+                <select class="form-select form-select-sm" [(ngModel)]="editForm.status">
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+            <div class="mt-3 d-flex justify-content-end gap-2">
+              <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">Cancel</button>
+              <button class="btn btn-success btn-sm" (click)="saveEmployee(employee)">Save Changes</button>
+            </div>
+          </div>
         </div>
 
-        <!-- Contact Info -->
-        <div class="contact-info">
-          <div class="contact-item">
-            <span class="contact-icon">✉️</span>
-            <span class="contact-text">{{ employee.email }}</span>
-          </div>
-          <div class="contact-item">
-            <span class="contact-icon">📞</span>
-            <span class="contact-text">{{ employee.phone || 'N/A' }}</span>
-          </div>
-        </div>
-
-        <!-- Roles Section -->
-        <div class="roles-section">
-          <span class="roles-label">Roles:</span>
-          <div class="roles-container">
-            <span 
-              *ngFor="let role of employee.roles" 
-              class="role-badge"
-              [ngClass]="getRoleClass(role)">
-              {{ role }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Employee Details -->
-        <div class="employee-details">
-          <div class="detail-row">
-            <span class="detail-label">Hired:</span>
-            <span class="detail-value">{{ formatDate(employee.hiredDate) }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Last login:</span>
-            <span class="detail-value" [class.never-logged]="!employee.lastLogin">
-              {{ formatDateTime(employee.lastLogin) }}
-            </span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Created:</span>
-            <span class="detail-value">{{ formatDate(employee.created_at) }}</span>
-          </div>
-          <div class="detail-row">
-            <button class="invite-btn" (click)="onInviteEmployee(employee)">
-              <span class="invite-icon">✉️</span>
-              Invite
-            </button>
-            <button class="edit-btn" (click)="onEditEmployee(employee)">
-              <span class="edit-icon">✏️</span>
-              Click to edit
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   </div>

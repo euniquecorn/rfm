@@ -19,6 +19,7 @@ export interface ApiResponse<T = any> {
 export interface UserData {
   id?: number;
   firstName: string;
+  middleName?: string;
   lastName: string;
   email: string;
   phone?: string;
@@ -299,8 +300,8 @@ export class DatabaseService {
       const connection = await pool.getConnection();
       
       let query = `
-        SELECT UserID, FullName, Email, Phone, Roles, Status, hired_date, last_login, created_at
-        FROM Users
+        SELECT id, first_name, middle_name, last_name, email, phone, roles, status, hired_date, last_login, created_at
+        FROM users
       `;
       
       const conditions: string[] = [];
@@ -326,19 +327,15 @@ export class DatabaseService {
       connection.release();
       
       const users: UserData[] = rows.map(row => {
-        const fullName = row['FullName'] || '';
-        const nameParts = fullName.split(' ');
-        const firstName = nameParts[0] || '';
-        const lastName = nameParts.slice(1).join(' ') || '';
-        
         return {
-          id: row['UserID'],
-          firstName: firstName,
-          lastName: lastName,
-          email: row['Email'],
-          phone: row['Phone'],
-          roles: row['Roles'] ? row['Roles'].split(',').map((r: string) => r.trim()) : [],
-          status: row['Status'],
+          id: row['id'],
+          firstName: row['first_name'] || '',
+          middleName: row['middle_name'] || undefined,
+          lastName: row['last_name'] || '',
+          email: row['email'],
+          phone: row['phone'],
+          roles: this.parseRoles(row['roles']),
+          status: row['status'],
           hiredDate: row['hired_date'],
           lastLogin: row['last_login'],
           created_at: row['created_at'],
@@ -366,9 +363,9 @@ export class DatabaseService {
       const connection = await pool.getConnection();
       
       const query = `
-        SELECT UserID, FullName, Email, Phone, Roles, Status, hired_date, last_login, created_at
-        FROM Users
-        WHERE UserID = ?
+        SELECT id, first_name, middle_name, last_name, email, phone, roles, status, hired_date, last_login, created_at
+        FROM users
+        WHERE id = ?
       `;
       
       const [rows] = await connection.execute<RowDataPacket[]>(query, [id]);
@@ -382,21 +379,18 @@ export class DatabaseService {
       }
       
       const user = rows[0];
-      const fullName = user['FullName'] || '';
-      const nameParts = fullName.split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
       
       return {
         success: true,
         data: {
-          id: user['UserID'],
-          firstName: firstName,
-          lastName: lastName,
-          email: user['Email'],
-          phone: user['Phone'],
-          roles: user['Roles'] ? user['Roles'].split(',').map((r: string) => r.trim()) : [],
-          status: user['Status'],
+          id: user['id'],
+          firstName: user['first_name'] || '',
+          middleName: user['middle_name'] || undefined,
+          lastName: user['last_name'] || '',
+          email: user['email'],
+          phone: user['phone'],
+          roles: this.parseRoles(user['roles']),
+          status: user['status'],
           hiredDate: user['hired_date'],
           lastLogin: user['last_login'],
           created_at: user['created_at'],
@@ -419,14 +413,15 @@ export class DatabaseService {
       const connection = await pool.getConnection();
       
       const query = `
-        INSERT INTO users (first_name, last_name, email, phone, roles, status, hired_date)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (first_name, middle_name, last_name, email, phone, roles, status, hired_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `;
       
       const [result] = await connection.execute<ResultSetHeader>(
         query,
         [
           userData.firstName,
+          userData.middleName || null,
           userData.lastName,
           userData.email,
           userData.phone || null,
@@ -475,6 +470,10 @@ export class DatabaseService {
       if (userData.firstName !== undefined) {
         updateFields.push('first_name = ?');
         params.push(userData.firstName);
+      }
+      if (userData.middleName !== undefined) {
+        updateFields.push('middle_name = ?');
+        params.push(userData.middleName);
       }
       if (userData.lastName !== undefined) {
         updateFields.push('last_name = ?');

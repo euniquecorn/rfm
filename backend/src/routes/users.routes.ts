@@ -55,17 +55,18 @@ router.get('/:id', async (req: Request, res: Response) => {
 // Create new user
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { firstName, lastName, email, phone, roles, status, hiredDate } = req.body;
+    const { firstName, middleName, lastName, email, phone, roles, status, hiredDate } = req.body;
     
     if (!firstName || !lastName || !email || !roles) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'First name, last name, email, and roles are required' 
+      return res.status(400).json({
+        success: false,
+        message: 'First name, last name, email, and roles are required'
       });
     }
     
     const result = await DatabaseService.createUser({
       firstName,
+      middleName,
       lastName,
       email,
       phone,
@@ -92,17 +93,18 @@ router.post('/', async (req: Request, res: Response) => {
 router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, phone, roles, status, hiredDate } = req.body;
+    const { firstName, middleName, lastName, email, phone, roles, status, hiredDate } = req.body;
     
     if (!id || isNaN(parseInt(id))) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Valid user ID is required' 
+      return res.status(400).json({
+        success: false,
+        message: 'Valid user ID is required'
       });
     }
     
     const result = await DatabaseService.updateUser(id, {
       firstName,
+      middleName,
       lastName,
       email,
       phone,
