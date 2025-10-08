@@ -5,9 +5,19 @@ const pool = require('./db');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Enable CORS for Angular frontend
+// Enable CORS for Angular frontend (allow any localhost port)
 app.use(cors({
-    origin: 'http://localhost:4200',
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        // Allow all localhost origins
+        if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+            return callback(null, true);
+        }
+        
+        callback(new Error('Not allowed by CORS'));
+    },
     credentials: true
 }));
 
