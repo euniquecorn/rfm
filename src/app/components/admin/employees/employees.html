@@ -4,14 +4,102 @@
     <h1 class="page-title">Employee Management</h1>
   </div>
 
-  <!-- Empty State -->
-  <div class="employees-list-container">
-    <div class="empty-state">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading employees...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <div class="error-icon">⚠️</div>
+    <h3 class="error-title">Error Loading Employees</h3>
+    <p class="error-message">{{ error }}</p>
+    <button class="retry-btn" (click)="loadEmployees()">Retry</button>
+  </div>
+
+  <!-- Employees List -->
+  <div *ngIf="!loading && !error" class="employees-list-container">
+    <!-- Empty State -->
+    <div *ngIf="employees.length === 0" class="empty-state">
       <div class="empty-icon">👥</div>
-      <h3 class="empty-title">Employee Management</h3>
+      <h3 class="empty-title">No Employees Found</h3>
       <p class="empty-message">
-        This tab is currently under development.
+        There are currently no employees in the system.
       </p>
+    </div>
+
+    <!-- Employees Grid -->
+    <div *ngIf="employees.length > 0" class="employees-grid">
+      <div *ngFor="let employee of employees" class="employee-card">
+        <!-- Header with Name and Status -->
+        <div class="employee-header">
+          <h3 class="employee-name">{{ getFullName(employee) }}</h3>
+          <span
+            class="status-badge"
+            [class.status-inactive]="employee.status === 'Inactive'">
+            {{ employee.status }}
+          </span>
+        </div>
+
+        <!-- User ID (if needed for reference) -->
+        <div class="user-id" *ngIf="employee.id" style="font-size: 12px; color: #999; margin-bottom: 10px;">
+          ID: {{ employee.id }}
+        </div>
+
+        <!-- Contact Info -->
+        <div class="contact-info">
+          <div class="contact-item">
+            <span class="contact-icon">✉️</span>
+            <span class="contact-text">{{ employee.email }}</span>
+          </div>
+          <div class="contact-item">
+            <span class="contact-icon">📞</span>
+            <span class="contact-text">{{ employee.phone || 'N/A' }}</span>
+          </div>
+        </div>
+
+        <!-- Roles Section -->
+        <div class="roles-section">
+          <span class="roles-label">Roles:</span>
+          <div class="roles-container">
+            <span 
+              *ngFor="let role of employee.roles" 
+              class="role-badge"
+              [ngClass]="getRoleClass(role)">
+              {{ role }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Employee Details -->
+        <div class="employee-details">
+          <div class="detail-row">
+            <span class="detail-label">Hired:</span>
+            <span class="detail-value">{{ formatDate(employee.hiredDate) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Last login:</span>
+            <span class="detail-value" [class.never-logged]="!employee.lastLogin">
+              {{ formatDateTime(employee.lastLogin) }}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Created:</span>
+            <span class="detail-value">{{ formatDate(employee.created_at) }}</span>
+          </div>
+          <div class="detail-row">
+            <button class="invite-btn" (click)="onInviteEmployee(employee)">
+              <span class="invite-icon">✉️</span>
+              Invite
+            </button>
+            <button class="edit-btn" (click)="onEditEmployee(employee)">
+              <span class="edit-icon">✏️</span>
+              Click to edit
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

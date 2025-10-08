@@ -299,21 +299,21 @@ export class DatabaseService {
       const connection = await pool.getConnection();
       
       let query = `
-        SELECT id, first_name, last_name, email, phone, roles, status, hired_date, last_login, created_at, updated_at
-        FROM users
+        SELECT UserID, FullName, Email, Phone, Roles, Status, hired_date, last_login, created_at
+        FROM Users
       `;
       
       const conditions: string[] = [];
       const params: any[] = [];
       
       if (status && status !== 'All Employees') {
-        conditions.push('status = ?');
+        conditions.push('Status = ?');
         params.push(status);
       }
       
       if (role && role !== 'All Employees' && !['Active', 'Inactive'].includes(role)) {
-        conditions.push('JSON_CONTAINS(roles, ?)');
-        params.push(JSON.stringify(role));
+        conditions.push('Roles LIKE ?');
+        params.push(`%${role}%`);
       }
       
       if (conditions.length > 0) {
@@ -325,19 +325,26 @@ export class DatabaseService {
       const [rows] = await connection.execute<RowDataPacket[]>(query, params);
       connection.release();
       
-      const users: UserData[] = rows.map(row => ({
-        id: row['id'],
-        firstName: row['first_name'],
-        lastName: row['last_name'],
-        email: row['email'],
-        phone: row['phone'],
-        roles: DatabaseService.parseRoles(row['roles']),
-        status: row['status'],
-        hiredDate: row['hired_date'],
-        lastLogin: row['last_login'],
-        created_at: row['created_at'],
-        updated_at: row['updated_at']
-      }));
+      const users: UserData[] = rows.map(row => {
+        const fullName = row['FullName'] || '';
+        const nameParts = fullName.split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        
+        return {
+          id: row['UserID'],
+          firstName: firstName,
+          lastName: lastName,
+          email: row['Email'],
+          phone: row['Phone'],
+          roles: row['Roles'] ? row['Roles'].split(',').map((r: string) => r.trim()) : [],
+          status: row['Status'],
+          hiredDate: row['hired_date'],
+          lastLogin: row['last_login'],
+          created_at: row['created_at'],
+          updated_at: row['created_at']
+        };
+      });
       
       return {
         success: true,
@@ -359,9 +366,9 @@ export class DatabaseService {
       const connection = await pool.getConnection();
       
       const query = `
-        SELECT id, first_name, last_name, email, phone, roles, status, hired_date, last_login, created_at, updated_at
-        FROM users
-        WHERE id = ?
+        SELECT UserID, FullName, Email, Phone, Roles, Status, hired_date, last_login, created_at
+        FROM Users
+        WHERE UserID = ?
       `;
       
       const [rows] = await connection.execute<RowDataPacket[]>(query, [id]);
@@ -375,20 +382,25 @@ export class DatabaseService {
       }
       
       const user = rows[0];
+      const fullName = user['FullName'] || '';
+      const nameParts = fullName.split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
       return {
         success: true,
         data: {
-          id: user['id'],
-          firstName: user['first_name'],
-          lastName: user['last_name'],
-          email: user['email'],
-          phone: user['phone'],
-          roles: DatabaseService.parseRoles(user['roles']),
-          status: user['status'],
+          id: user['UserID'],
+          firstName: firstName,
+          lastName: lastName,
+          email: user['Email'],
+          phone: user['Phone'],
+          roles: user['Roles'] ? user['Roles'].split(',').map((r: string) => r.trim()) : [],
+          status: user['Status'],
           hiredDate: user['hired_date'],
           lastLogin: user['last_login'],
           created_at: user['created_at'],
-          updated_at: user['updated_at']
+          updated_at: user['created_at']
         }
       };
     } catch (error) {
