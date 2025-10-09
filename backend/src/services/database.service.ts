@@ -42,15 +42,32 @@ export class DatabaseService {
   // Parse roles safely
   static parseRoles(raw: any): string[] {
     try {
+      // Already an array (MySQL JSON type automatically parsed)
       if (Array.isArray(raw)) return raw;
       if (raw == null) return [];
-      const asString = Buffer.isBuffer(raw) ? raw.toString('utf8') : String(raw);
-      const trimmed = asString.trim();
-      if (trimmed.startsWith('[')) {
-        return JSON.parse(trimmed);
+      
+      // Handle Buffer (from some MySQL drivers)
+      if (Buffer.isBuffer(raw)) {
+        const str = raw.toString('utf8').trim();
+        if (str.startsWith('[')) return JSON.parse(str);
+        return str.split(',').map(r => r.trim()).filter(Boolean);
       }
-      return trimmed.split(',').map(r => r.trim()).filter(Boolean);
-    } catch {
+      
+      // Handle objects (already parsed JSON from Aiven/mysql2)
+      if (typeof raw === 'object') {
+        return Array.isArray(raw) ? raw : [];
+      }
+      
+      // Handle strings
+      const asString = String(raw).trim();
+      if (asString.startsWith('[')) {
+        return JSON.parse(asString);
+      }
+      
+      // Handle comma-separated values
+      return asString.split(',').map(r => r.trim()).filter(Boolean);
+    } catch (error) {
+      console.error('Error parsing roles:', error, 'Raw value:', raw);
       return [];
     }
   }
