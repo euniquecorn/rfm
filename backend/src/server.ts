@@ -4,6 +4,7 @@ import bodyParser = require('body-parser');
 import { closeDatabase, initializeDatabase, testConnection } from './config/database';
 import canvasRoutes from './routes/canvas.routes';
 import usersRoutes from './routes/users.routes';
+import authRoutes from './routes/auth.routes';
 import { DatabaseService } from './services/database.service';
 
 const app = express();
@@ -34,6 +35,7 @@ app.get('/api/health', async (req: express.Request, res: express.Response) => {
 });
 
 // API Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/canvas', canvasRoutes);
 app.use('/api/users', usersRoutes);
 
@@ -44,6 +46,12 @@ app.get('/', (req: express.Request, res: express.Response) => {
     version: '1.0.0',
     endpoints: {
       health: '/api/health',
+      auth: {
+        register: 'POST /api/auth/register',
+        login: 'POST /api/auth/login',
+        logout: 'POST /api/auth/logout',
+        me: 'GET /api/auth/me'
+      },
       canvas: {
         save: 'POST /api/canvas/save',
         list: 'GET /api/canvas/list',

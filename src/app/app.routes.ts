@@ -5,9 +5,7 @@ import { ApparelComponent } from './components/apparel/apparel';
 import { CustomizationComponent } from './components/customization/customization';
 import { CartComponent } from './components/cart/cart';
 import { LandingPageComponent } from './components/landing-page/landing-page';
-import { SettingsComponent } from './components/settings/settings';
 import { AccountSettingsComponent } from './components/account-settings/account-settings';
-import { LogoutComponent } from './components/logout/logout';
 
 // Admin Components
 import { AdminLayoutComponent } from './components/admin/admin-layout/admin-layout';
@@ -19,21 +17,32 @@ import { AdminCashflowComponent } from './components/admin/cashflow/cashflow';
 import { AdminReportsComponent } from './components/admin/reports/reports';
 import { AdminEmployeesComponent } from './components/admin/employees/employees';
 
+// Guards
+import { AuthGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
+
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
-  { path: 'apparel', component: ApparelComponent },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
+  
+  // Customer routes (optional auth)
+  { path: 'apparel', component: ApparelComponent },
   { path: 'customization', component: CustomizationComponent },
   { path: 'cart', component: CartComponent },
-  { path: 'settings', component: SettingsComponent },
-  { path: 'account-settings', component: AccountSettingsComponent },
-  { path: 'logout', component: LogoutComponent },
   
-  // Admin Routes
+  // Protected user profile route
+  { 
+    path: 'account-settings', 
+    component: AccountSettingsComponent,
+    canActivate: [AuthGuard]
+  },
+  
+  // Admin Routes (protected with auth + admin guards)
   {
     path: 'admin',
     component: AdminLayoutComponent,
+    canActivate: [AuthGuard, AdminGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: AdminDashboardComponent },

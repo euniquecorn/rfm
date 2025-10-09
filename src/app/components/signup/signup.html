@@ -3,24 +3,108 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <h2 class="text-center mb-4">Sign Up</h2>
-            <form>
+
+            <!-- Success Message -->
+            <div *ngIf="successMessage" class="alert alert-success" role="alert">
+                {{ successMessage }}
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+                {{ errorMessage }}
+            </div>
+
+            <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
+                    <label for="fullName" class="form-label">Full Name *</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="fullName" 
+                        formControlName="fullName"
+                        [class.is-invalid]="fullName?.invalid && fullName?.touched"
+                        placeholder="Enter your full name">
+                    <div *ngIf="fullName?.invalid && fullName?.touched" class="invalid-feedback">
+                        <div *ngIf="fullName?.errors?.['required']">Full name is required</div>
+                        <div *ngIf="fullName?.errors?.['minlength']">Name must be at least 2 characters</div>
+                    </div>
                 </div>
+
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+                    <label for="email" class="form-label">Email Address *</label>
+                    <input 
+                        type="email" 
+                        class="form-control" 
+                        id="email" 
+                        formControlName="email"
+                        [class.is-invalid]="email?.invalid && email?.touched"
+                        placeholder="name@example.com">
+                    <div *ngIf="email?.invalid && email?.touched" class="invalid-feedback">
+                        <div *ngIf="email?.errors?.['required']">Email is required</div>
+                        <div *ngIf="email?.errors?.['email']">Please enter a valid email</div>
+                    </div>
                 </div>
+
                 <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Password" required>
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input 
+                        type="tel" 
+                        class="form-control" 
+                        id="phone" 
+                        formControlName="phone"
+                        [class.is-invalid]="phone?.invalid && phone?.touched"
+                        placeholder="+63 XXX XXX XXXX">
+                    <div *ngIf="phone?.invalid && phone?.touched" class="invalid-feedback">
+                        <div *ngIf="phone?.errors?.['pattern']">Please enter a valid phone number</div>
+                    </div>
                 </div>
+
                 <div class="mb-3">
-                    <label for="confirmPassword" class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+                    <label for="address" class="form-label">Address</label>
+                    <textarea 
+                        class="form-control" 
+                        id="address" 
+                        formControlName="address"
+                        rows="2"
+                        placeholder="Enter your address (optional)"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password *</label>
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        id="password" 
+                        formControlName="password"
+                        [class.is-invalid]="password?.invalid && password?.touched"
+                        placeholder="Password (minimum 6 characters)">
+                    <div *ngIf="password?.invalid && password?.touched" class="invalid-feedback">
+                        <div *ngIf="password?.errors?.['required']">Password is required</div>
+                        <div *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password *</label>
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        id="confirmPassword" 
+                        formControlName="confirmPassword"
+                        [class.is-invalid]="(confirmPassword?.invalid && confirmPassword?.touched) || (signupForm.errors?.['passwordMismatch'] && confirmPassword?.touched)"
+                        placeholder="Confirm Password">
+                    <div *ngIf="confirmPassword?.invalid && confirmPassword?.touched" class="invalid-feedback">
+                        <div *ngIf="confirmPassword?.errors?.['required']">Please confirm your password</div>
+                    </div>
+                    <div *ngIf="signupForm.errors?.['passwordMismatch'] && confirmPassword?.touched" class="invalid-feedback" style="display: block;">
+                        Passwords do not match
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" [disabled]="isLoading">
+                    <span *ngIf="!isLoading">Sign Up</span>
+                    <span *ngIf="isLoading">Creating Account...</span>
+                </button>
             </form>
             <div class="text-center mt-3">
                 <small>Already have an account? <a routerLink="/login">Login</a></small>
