@@ -1,5 +1,5 @@
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<!-- Navigation Bar (Only show for customer routes, hide for admin routes) -->
+<nav *ngIf="!isAdminRoute()" class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
     <a class="navbar-brand" routerLink="/">
       <div class="logo">RFM</div>
