@@ -1,65 +1,73 @@
 <div class="employees-container">
   <!-- Header Section -->
   <div class="employees-header">
-    <h1 class="page-title">Employee Management</h1>
-    <button class="btn btn-primary" (click)="toggleAddForm()">
-      <span class="add-icon">➕</span>
-      Add an Employee
+    <button class="btn btn-primary ms-auto" (click)="toggleAddForm()" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+      <i class="bi bi-plus-circle me-2"></i>
+      Add Employee
     </button>
   </div>
 
-  <!-- Add Employee Form Card -->
-  <div *ngIf="showAddForm" class="card mb-4 shadow-sm">
-    <div class="card-header bg-primary text-white">
-      <h5 class="mb-0">Add New Employee</h5>
-    </div>
-    <div class="card-body">
-      <div class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label">First Name *</label>
-          <input type="text" class="form-control" [(ngModel)]="newEmployeeForm.firstName" placeholder="First Name">
+  <!-- Add Employee Modal -->
+  <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="addEmployeeModalLabel">
+            <i class="bi bi-person-plus-fill me-2"></i>Add New Employee
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="col-md-4">
-          <label class="form-label">Middle Name</label>
-          <input type="text" class="form-control" [(ngModel)]="newEmployeeForm.middleName" placeholder="Middle Name">
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Last Name *</label>
-          <input type="text" class="form-control" [(ngModel)]="newEmployeeForm.lastName" placeholder="Last Name">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Email *</label>
-          <input type="email" class="form-control" [(ngModel)]="newEmployeeForm.email" placeholder="email@example.com">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Phone Number</label>
-          <input type="tel" class="form-control" [(ngModel)]="newEmployeeForm.phone" placeholder="+63 XXX XXX XXXX">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Roles *</label>
-          <div class="roles-selector">
-            <button 
-              *ngFor="let role of availableRoles" 
-              type="button"
-              class="btn btn-sm me-1 mb-1"
-              [class.btn-primary]="isRoleSelected(role, 'add')"
-              [class.btn-outline-primary]="!isRoleSelected(role, 'add')"
-              (click)="toggleRole(role, 'add')">
-              {{ role }}
-            </button>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">First Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="newEmployeeForm.firstName" placeholder="First Name">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Middle Name</label>
+              <input type="text" class="form-control" [(ngModel)]="newEmployeeForm.middleName" placeholder="Middle Name">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Last Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="newEmployeeForm.lastName" placeholder="Last Name">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email *</label>
+              <input type="email" class="form-control" [(ngModel)]="newEmployeeForm.email" placeholder="email@example.com">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" [(ngModel)]="newEmployeeForm.phone" placeholder="+63 XXX XXX XXXX">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Roles *</label>
+              <div class="roles-selector">
+                <button 
+                  *ngFor="let role of availableRoles" 
+                  type="button"
+                  class="btn btn-sm me-1 mb-1"
+                  [class.btn-primary]="isRoleSelected(role, 'add')"
+                  [class.btn-outline-primary]="!isRoleSelected(role, 'add')"
+                  (click)="toggleRole(role, 'add')">
+                  {{ role }}
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Status</label>
+              <select class="form-select" [(ngModel)]="newEmployeeForm.status">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div class="col-md-6">
-          <label class="form-label">Status</label>
-          <select class="form-select" [(ngModel)]="newEmployeeForm.status">
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="addEmployee()" data-bs-dismiss="modal">
+            <i class="bi bi-check-circle me-2"></i>Add Employee
+          </button>
         </div>
-      </div>
-      <div class="mt-3 d-flex justify-content-end gap-2">
-        <button class="btn btn-secondary" (click)="cancelAdd()">Cancel</button>
-        <button class="btn btn-success" (click)="addEmployee()">Add Employee</button>
       </div>
     </div>
   </div>
@@ -93,8 +101,8 @@
     <div *ngIf="employees.length > 0" class="employees-grid">
       <div *ngFor="let employee of employees">
         
-        <!-- View Mode Card -->
-        <div *ngIf="editingEmployeeId !== employee.id" class="card shadow-sm employee-card">
+        <!-- Employee Card -->
+        <div class="card shadow-sm employee-card">
           <div class="card-body">
             <!-- Header with Name and Status -->
             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -155,70 +163,79 @@
               </div>
               
               <!-- Edit Button -->
-              <button class="btn btn-primary btn-sm w-100" (click)="onEditEmployee(employee)">
-                <span class="me-1">✏️</span>
-                Click to Edit
+              <button class="btn btn-primary btn-sm w-100" (click)="onEditEmployee(employee)" data-bs-toggle="modal" data-bs-target="#editEmployeeModal">
+                <i class="bi bi-pencil-square me-1"></i>
+                Edit Employee
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Edit Mode Card -->
-        <div *ngIf="editingEmployeeId === employee.id" class="card shadow employee-card-edit">
-          <div class="card-header bg-warning">
-            <h5 class="mb-0">Editing: {{ getFullName(employee) }}</h5>
-          </div>
-          <div class="card-body">
-            <div class="row g-3">
-              <div class="col-md-4">
-                <label class="form-label">First Name *</label>
-                <input type="text" class="form-control form-control-sm" [(ngModel)]="editForm.firstName">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Middle Name</label>
-                <input type="text" class="form-control form-control-sm" [(ngModel)]="editForm.middleName">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Last Name *</label>
-                <input type="text" class="form-control form-control-sm" [(ngModel)]="editForm.lastName">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Email *</label>
-                <input type="email" class="form-control form-control-sm" [(ngModel)]="editForm.email">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Phone Number</label>
-                <input type="tel" class="form-control form-control-sm" [(ngModel)]="editForm.phone">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Roles *</label>
-                <div class="roles-selector">
-                  <button 
-                    *ngFor="let role of availableRoles" 
-                    type="button"
-                    class="btn btn-sm me-1 mb-1"
-                    [class.btn-primary]="isRoleSelected(role, 'edit')"
-                    [class.btn-outline-primary]="!isRoleSelected(role, 'edit')"
-                    (click)="toggleRole(role, 'edit')">
-                    {{ role }}
-                  </button>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Status</label>
-                <select class="form-select form-select-sm" [(ngModel)]="editForm.status">
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Employee Modal -->
+  <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title" id="editEmployeeModalLabel">
+            <i class="bi bi-pencil-square me-2"></i>Edit Employee
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">First Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="editForm.firstName">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Middle Name</label>
+              <input type="text" class="form-control" [(ngModel)]="editForm.middleName">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Last Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="editForm.lastName">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email *</label>
+              <input type="email" class="form-control" [(ngModel)]="editForm.email">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" [(ngModel)]="editForm.phone">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Roles *</label>
+              <div class="roles-selector">
+                <button 
+                  *ngFor="let role of availableRoles" 
+                  type="button"
+                  class="btn btn-sm me-1 mb-1"
+                  [class.btn-primary]="isRoleSelected(role, 'edit')"
+                  [class.btn-outline-primary]="!isRoleSelected(role, 'edit')"
+                  (click)="toggleRole(role, 'edit')">
+                  {{ role }}
+                </button>
               </div>
             </div>
-            <div class="mt-3 d-flex justify-content-end gap-2">
-              <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">Cancel</button>
-              <button class="btn btn-success btn-sm" (click)="saveEmployee(employee)">Save Changes</button>
+            <div class="col-md-6">
+              <label class="form-label">Status</label>
+              <select class="form-select" [(ngModel)]="editForm.status">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
             </div>
           </div>
         </div>
-
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-success" (click)="saveEmployee(editingEmployee)" data-bs-dismiss="modal">
+            <i class="bi bi-check-circle me-2"></i>Save Changes
+          </button>
+        </div>
       </div>
     </div>
   </div>

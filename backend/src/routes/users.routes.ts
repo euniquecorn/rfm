@@ -45,28 +45,36 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 /**
  * POST /api/users
- * Body: { fullName, email, phone, roles, status?, hired_date? }
+ * Body: { firstName, middleName?, lastName, email, phone, roles, status?, hired_date? }
  */
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { fullName, email, phone, roles, status, hired_date } = req.body;
+    const { firstName, middleName, lastName, email, phone, roles, status, hired_date } = req.body;
 
-    if (!fullName || !email || !roles) {
+    if (!firstName || !lastName || !email || !roles) {
       return res.status(400).json({
         success: false,
-        message: 'Full name, email, and roles are required',
+        message: 'First name, last name, email, and roles are required',
       });
     }
+
+    // Combine name fields into FullName
+    const nameParts = [firstName];
+    if (middleName) nameParts.push(middleName);
+    nameParts.push(lastName);
+    const fullName = nameParts.join(' ').toUpperCase();
+
+    // Convert roles array to JSON string if needed
+    const rolesString = Array.isArray(roles) ? JSON.stringify(roles) : roles;
 
     const result = await DatabaseService.createUser({
       FullName: fullName,
       Email: email,
-      Phone: phone,
-      Roles: roles,
+      Phone: phone || '',
+      Roles: rolesString,
       Status: status || 'Active',
       hired_date,
     });
-
 
     res.status(result.success ? 201 : 400).json(result);
   } catch (error) {
@@ -81,12 +89,31 @@ router.post('/', async (req: Request, res: Response) => {
 
 /**
  * PUT /api/users/:id
- * Body: { fullName?, email?, phone?, roles?, status?, hired_date? }
+ * Body: { firstName?, middleName?, lastName?, email?, phone?, roles?, status?, hired_date? }
  */
 router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const result = await DatabaseService.updateUser(id, req.body);
+    const { firstName, middleName, lastName, email, phone, roles, status, hired_date } = req.body;
+    
+    const updateData: any = {};
+    
+    // Combine name fields into FullName if any name field is provided
+    if (firstName || middleName || lastName) {
+      const nameParts = [];
+      if (firstName) nameParts.push(firstName);
+      if (middleName) nameParts.push(middleName);
+      if (lastName) nameParts.push(lastName);
+      updateData.FullName = nameParts.join(' ').toUpperCase();
+    }
+    
+    if (email) updateData.Email = email;
+    if (phone !== undefined) updateData.Phone = phone;
+    if (roles) updateData.Roles = Array.isArray(roles) ? JSON.stringify(roles) : roles;
+    if (status) updateData.Status = status;
+    if (hired_date) updateData.hired_date = hired_date;
+    
+    const result = await DatabaseService.updateUser(id, updateData);
     res.status(result.success ? 200 : 400).json(result);
   } catch (error) {
     console.error('Error updating user:', error);

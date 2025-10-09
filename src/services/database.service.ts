@@ -157,17 +157,19 @@ export class DatabaseService {
 
         return {
           id: row['UserId'],
+          FullName: row['FullName'],
           firstName: firstName,
           middleName: middleName || undefined,
           lastName: lastName,
-          email: row['Email'],
-          phone: row['Phone'],
+          Email: row['Email'],
+          Phone: row['Phone'],
+          Roles: row['Roles'],
           roles: rolesData,
-          status: row['Status'],
-          hiredDate: row['hired_date'],
-          lastLogin: row['last_login'],
+          Status: row['Status'],
+          hired_date: row['hired_date'],
+          last_login: row['last_login'],
           created_at: row['created_at'],
-          updated_at: row['update_at']
+          updated_at: row['created_at']
         };
       });
 
@@ -201,17 +203,19 @@ export class DatabaseService {
         success: true,
         data: {
           id: u['UserId'],
+          FullName: u['FullName'],
           firstName: firstName,
           middleName: middleName || undefined,
           lastName: lastName,
-          email: u['Email'],
-          phone: u['Phone'],
+          Email: u['Email'],
+          Phone: u['Phone'],
+          Roles: u['Roles'],
           roles: rolesData,
-          status: u['Status'],
-          hiredDate: u['hired_date'],
-          lastLogin: u['last_login'],
+          Status: u['Status'],
+          hired_date: u['hired_date'],
+          last_login: u['last_login'],
           created_at: u['created_at'],
-          updated_at: u['update_at']
+          updated_at: u['created_at']
         }
       };
     } catch (error) {

@@ -11,115 +11,55 @@ class DatabaseService {
                 return [];
             const asString = Buffer.isBuffer(raw) ? raw.toString('utf8') : String(raw);
             const trimmed = asString.trim();
-            if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
-                const parsed = JSON.parse(trimmed);
-                if (Array.isArray(parsed))
-                    return parsed;
-                if (parsed && typeof parsed === 'object' && Array.isArray(parsed.roles)) {
-                    return parsed.roles;
-                }
+            if (trimmed.startsWith('[')) {
+                return JSON.parse(trimmed);
             }
-            if (trimmed.includes(',')) {
-                return trimmed.split(',').map(r => r.trim()).filter(Boolean);
-            }
-            return trimmed ? [trimmed] : [];
+            return trimmed.split(',').map(r => r.trim()).filter(Boolean);
         }
         catch {
-            try {
-                const asString = Buffer.isBuffer(raw) ? raw.toString('utf8') : String(raw);
-                if (asString.includes(',')) {
-                    return asString.split(',').map(r => r.trim()).filter(Boolean);
-                }
-                return asString ? [asString.trim()] : [];
-            }
-            catch {
-                return [];
-            }
+            return [];
         }
     }
     static async saveCanvas(canvasData, name) {
         try {
             const connection = await database_1.pool.getConnection();
-            const query = `
-        INSERT INTO canvases (name, canvas_data) 
-        VALUES (?, ?)
-      `;
-            const [result] = await connection.execute(query, [name, JSON.stringify(canvasData)]);
+            const [result] = await connection.execute(`INSERT INTO canvases (name, canvas_data) VALUES (?, ?)`, [name, JSON.stringify(canvasData)]);
             connection.release();
-            if (result.affectedRows > 0) {
-                return {
-                    success: true,
-                    message: 'Canvas saved successfully',
-                    data: {
-                        id: result.insertId,
-                        name,
-                        canvas_data: canvasData,
-                        created_at: new Date().toISOString()
-                    }
-                };
-            }
-            else {
-                return {
-                    success: false,
-                    message: 'Failed to save canvas'
-                };
-            }
+            return {
+                success: result.affectedRows > 0,
+                message: 'Canvas saved successfully',
+                data: {
+                    id: result.insertId,
+                    name,
+                    canvas_data: canvasData,
+                    created_at: new Date().toISOString()
+                }
+            };
         }
         catch (error) {
-            console.error('Database error in saveCanvas:', error);
-            return {
-                success: false,
-                message: 'Database error occurred',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
+            return { success: false, error: error.message };
         }
     }
     static async getCanvasList() {
         try {
             const connection = await database_1.pool.getConnection();
-            const query = `
-        SELECT id, name, created_at, updated_at 
-        FROM canvases 
-        ORDER BY updated_at DESC
-      `;
-            const [rows] = await connection.execute(query);
+            const [rows] = await connection.execute(`
+        SELECT id, name, created_at, updated_at FROM canvases ORDER BY updated_at DESC
+      `);
             connection.release();
-            const canvases = rows.map(row => ({
-                id: row['id'],
-                name: row['name'],
-                created_at: row['created_at'],
-                updated_at: row['updated_at']
-            }));
-            return {
-                success: true,
-                data: canvases
-            };
+            return { success: true, data: rows };
         }
         catch (error) {
-            console.error('Database error in getCanvasList:', error);
-            return {
-                success: false,
-                message: 'Failed to fetch canvas list',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
+            return { success: false, error: error.message };
         }
     }
     static async getCanvas(id) {
         try {
             const connection = await database_1.pool.getConnection();
-            const query = `
-        SELECT id, name, canvas_data, created_at, updated_at 
-        FROM canvases 
-        WHERE id = ?
-      `;
-            const [rows] = await connection.execute(query, [id]);
+            const [rows] = await connection.execute(`SELECT * FROM canvases WHERE id = ?`, [id]);
             connection.release();
-            if (rows.length === 0) {
-                return {
-                    success: false,
-                    message: 'Canvas not found'
-                };
-            }
+            if (rows.length === 0)
+                return { success: false, message: 'Canvas not found' };
             const canvas = rows[0];
             return {
                 success: true,
@@ -133,110 +73,7 @@ class DatabaseService {
             };
         }
         catch (error) {
-            console.error('Database error in getCanvas:', error);
-            return {
-                success: false,
-                message: 'Failed to fetch canvas',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
-        }
-    }
-    static async updateCanvas(id, canvasData, name) {
-        try {
-            const connection = await database_1.pool.getConnection();
-            let query;
-            let params;
-            if (name) {
-                query = `
-          UPDATE canvases 
-          SET canvas_data = ?, name = ?, updated_at = CURRENT_TIMESTAMP 
-          WHERE id = ?
-        `;
-                params = [JSON.stringify(canvasData), name, id];
-            }
-            else {
-                query = `
-          UPDATE canvases 
-          SET canvas_data = ?, updated_at = CURRENT_TIMESTAMP 
-          WHERE id = ?
-        `;
-                params = [JSON.stringify(canvasData), id];
-            }
-            const [result] = await connection.execute(query, params);
-            connection.release();
-            if (result.affectedRows > 0) {
-                return {
-                    success: true,
-                    message: 'Canvas updated successfully',
-                    data: {
-                        id: parseInt(id),
-                        name: name || 'Updated Canvas',
-                        canvas_data: canvasData,
-                        updated_at: new Date().toISOString()
-                    }
-                };
-            }
-            else {
-                return {
-                    success: false,
-                    message: 'Canvas not found or no changes made'
-                };
-            }
-        }
-        catch (error) {
-            console.error('Database error in updateCanvas:', error);
-            return {
-                success: false,
-                message: 'Failed to update canvas',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
-        }
-    }
-    static async deleteCanvas(id) {
-        try {
-            const connection = await database_1.pool.getConnection();
-            const query = `DELETE FROM canvases WHERE id = ?`;
-            const [result] = await connection.execute(query, [id]);
-            connection.release();
-            if (result.affectedRows > 0) {
-                return {
-                    success: true,
-                    message: 'Canvas deleted successfully'
-                };
-            }
-            else {
-                return {
-                    success: false,
-                    message: 'Canvas not found'
-                };
-            }
-        }
-        catch (error) {
-            console.error('Database error in deleteCanvas:', error);
-            return {
-                success: false,
-                message: 'Failed to delete canvas',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
-        }
-    }
-    static async healthCheck() {
-        try {
-            const connection = await database_1.pool.getConnection();
-            await connection.execute('SELECT 1');
-            connection.release();
-            return {
-                success: true,
-                message: 'Database connection is healthy'
-            };
-        }
-        catch (error) {
-            console.error('Database health check failed:', error);
-            return {
-                success: false,
-                message: 'Database connection failed',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
+            return { success: false, error: error.message };
         }
     }
     static async getUsers(role, status) {
@@ -256,170 +93,99 @@ class DatabaseService {
                 conditions.push('Roles LIKE ?');
                 params.push(`%${role}%`);
             }
-            if (conditions.length > 0) {
+            if (conditions.length > 0)
                 query += ' WHERE ' + conditions.join(' AND ');
-            }
             query += ' ORDER BY created_at DESC';
             const [rows] = await connection.execute(query, params);
             connection.release();
             const users = rows.map(row => {
-                const fullName = row['FullName'] || '';
-                const nameParts = fullName.trim().split(/\s+/);
-                let firstName = '';
-                let middleName = undefined;
-                let lastName = '';
-                if (nameParts.length === 1) {
-                    firstName = nameParts[0];
-                }
-                else if (nameParts.length === 2) {
-                    firstName = nameParts[0];
-                    lastName = nameParts[1];
-                }
-                else if (nameParts.length >= 3) {
-                    firstName = nameParts[0];
-                    lastName = nameParts[nameParts.length - 1];
-                    middleName = nameParts.slice(1, -1).join(' ');
-                }
+                const nameParts = row['FullName'].trim().split(' ');
+                const firstName = nameParts[0] || '';
+                const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+                const middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : '';
+                const rolesData = this.parseRoles(row['Roles']);
                 return {
                     id: row['UserId'],
                     firstName: firstName,
-                    middleName: middleName,
+                    middleName: middleName || undefined,
                     lastName: lastName,
                     email: row['Email'],
                     phone: row['Phone'],
-                    roles: this.parseRoles(row['Roles']),
+                    roles: rolesData,
                     status: row['Status'],
                     hiredDate: row['hired_date'],
                     lastLogin: row['last_login'],
                     created_at: row['created_at'],
-                    updated_at: row['created_at']
+                    updated_at: row['update_at']
                 };
             });
-            return {
-                success: true,
-                data: users
-            };
+            return { success: true, data: users };
         }
         catch (error) {
-            console.error('Database error in getUsers:', error);
-            return {
-                success: false,
-                message: 'Failed to fetch users',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
+            return { success: false, message: 'Failed to fetch users', error: error.message };
         }
     }
     static async getUser(id) {
         try {
             const connection = await database_1.pool.getConnection();
-            const query = `
-        SELECT UserId, FullName, Email, Phone, Roles, Status, hired_date, last_login, created_at
-        FROM Users
-        WHERE UserId = ?
-      `;
-            const [rows] = await connection.execute(query, [id]);
+            const [rows] = await connection.execute(`SELECT UserId, FullName, Email, Phone, Roles, Status, hired_date, last_login, created_at FROM Users WHERE UserId = ?`, [id]);
             connection.release();
-            if (rows.length === 0) {
-                return {
-                    success: false,
-                    message: 'User not found'
-                };
-            }
-            const user = rows[0];
-            const fullName = user['FullName'] || '';
-            const nameParts = fullName.trim().split(/\s+/);
-            let firstName = '';
-            let middleName = undefined;
-            let lastName = '';
-            if (nameParts.length === 1) {
-                firstName = nameParts[0];
-            }
-            else if (nameParts.length === 2) {
-                firstName = nameParts[0];
-                lastName = nameParts[1];
-            }
-            else if (nameParts.length >= 3) {
-                firstName = nameParts[0];
-                lastName = nameParts[nameParts.length - 1];
-                middleName = nameParts.slice(1, -1).join(' ');
-            }
+            if (rows.length === 0)
+                return { success: false, message: 'User not found' };
+            const u = rows[0];
+            const nameParts = u['FullName'].trim().split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+            const middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : '';
+            const rolesData = this.parseRoles(u['Roles']);
             return {
                 success: true,
                 data: {
-                    id: user['UserId'],
+                    id: u['UserId'],
                     firstName: firstName,
-                    middleName: middleName,
+                    middleName: middleName || undefined,
                     lastName: lastName,
-                    email: user['Email'],
-                    phone: user['Phone'],
-                    roles: this.parseRoles(user['Roles']),
-                    status: user['Status'],
-                    hiredDate: user['hired_date'],
-                    lastLogin: user['last_login'],
-                    created_at: user['created_at'],
-                    updated_at: user['created_at']
+                    email: u['Email'],
+                    phone: u['Phone'],
+                    roles: rolesData,
+                    status: u['Status'],
+                    hiredDate: u['hired_date'],
+                    lastLogin: u['last_login'],
+                    created_at: u['created_at'],
+                    updated_at: u['update_at']
                 }
             };
         }
         catch (error) {
-            console.error('Database error in getUser:', error);
-            return {
-                success: false,
-                message: 'Failed to fetch user',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
+            return { success: false, message: 'Failed to fetch user', error: error.message };
         }
     }
     static async createUser(userData) {
         try {
             const connection = await database_1.pool.getConnection();
-            const nameParts = [userData.firstName];
-            if (userData.middleName) {
-                nameParts.push(userData.middleName);
-            }
-            nameParts.push(userData.lastName);
-            const fullName = nameParts.join(' ');
-            const rolesString = Array.isArray(userData.roles) ? userData.roles.join(', ') : userData.roles;
             const query = `
         INSERT INTO Users (FullName, Email, Phone, PasswordHash, Roles, Status, hired_date)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
             const defaultPasswordHash = '$2b$10$defaultHashForNewUsers12345678901234567890123456789';
             const [result] = await connection.execute(query, [
-                fullName,
-                userData.email,
-                userData.phone || '',
+                userData.FullName,
+                userData.Email,
+                userData.Phone || '',
                 defaultPasswordHash,
-                rolesString,
-                userData.status,
-                userData.hiredDate || null
+                userData.Roles,
+                userData.Status,
+                userData.hired_date || null
             ]);
             connection.release();
-            if (result.affectedRows > 0) {
-                return {
-                    success: true,
-                    message: 'User created successfully',
-                    data: {
-                        id: result.insertId,
-                        ...userData,
-                        created_at: new Date().toISOString()
-                    }
-                };
-            }
-            else {
-                return {
-                    success: false,
-                    message: 'Failed to create user'
-                };
-            }
+            return {
+                success: true,
+                message: 'User created successfully',
+                data: { id: result.insertId, ...userData, created_at: new Date().toISOString() }
+            };
         }
         catch (error) {
-            console.error('Database error in createUser:', error);
-            return {
-                success: false,
-                message: 'Database error occurred',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
+            return { success: false, message: 'Failed to create user', error: error.message };
         }
     }
     static async updateUser(id, userData) {
@@ -427,147 +193,128 @@ class DatabaseService {
             const connection = await database_1.pool.getConnection();
             const updateFields = [];
             const params = [];
-            if (userData.firstName !== undefined || userData.middleName !== undefined || userData.lastName !== undefined) {
-                const [rows] = await connection.execute('SELECT FullName FROM Users WHERE UserId = ?', [id]);
-                if (rows.length > 0) {
-                    const currentFullName = rows[0]['FullName'] || '';
-                    const currentParts = currentFullName.trim().split(/\s+/);
-                    let firstName = userData.firstName;
-                    let middleName = userData.middleName;
-                    let lastName = userData.lastName;
-                    if (firstName === undefined) {
-                        firstName = currentParts[0] || '';
-                    }
-                    if (lastName === undefined) {
-                        if (currentParts.length === 1) {
-                            lastName = '';
-                        }
-                        else {
-                            lastName = currentParts[currentParts.length - 1];
-                        }
-                    }
-                    if (middleName === undefined && currentParts.length >= 3) {
-                        middleName = currentParts.slice(1, -1).join(' ');
-                    }
-                    const nameParts = [firstName];
-                    if (middleName) {
-                        nameParts.push(middleName);
-                    }
-                    if (lastName) {
-                        nameParts.push(lastName);
-                    }
-                    const fullName = nameParts.join(' ');
-                    updateFields.push('FullName = ?');
-                    params.push(fullName);
-                }
+            if (userData.FullName) {
+                updateFields.push('FullName = ?');
+                params.push(userData.FullName);
             }
-            if (userData.email !== undefined) {
+            if (userData.Email) {
                 updateFields.push('Email = ?');
-                params.push(userData.email);
+                params.push(userData.Email);
             }
-            if (userData.phone !== undefined) {
+            if (userData.Phone) {
                 updateFields.push('Phone = ?');
-                params.push(userData.phone);
+                params.push(userData.Phone);
             }
-            if (userData.roles !== undefined) {
-                const rolesString = Array.isArray(userData.roles) ? userData.roles.join(', ') : userData.roles;
+            if (userData.Roles) {
                 updateFields.push('Roles = ?');
-                params.push(rolesString);
+                params.push(userData.Roles);
             }
-            if (userData.status !== undefined) {
+            if (userData.Status) {
                 updateFields.push('Status = ?');
-                params.push(userData.status);
+                params.push(userData.Status);
             }
-            if (userData.hiredDate !== undefined) {
+            if (userData.hired_date) {
                 updateFields.push('hired_date = ?');
-                params.push(userData.hiredDate);
+                params.push(userData.hired_date);
             }
-            if (updateFields.length === 0) {
-                return {
-                    success: false,
-                    message: 'No fields to update'
-                };
-            }
+            if (updateFields.length === 0)
+                return { success: false, message: 'No fields to update' };
             params.push(id);
             const query = `UPDATE Users SET ${updateFields.join(', ')} WHERE UserId = ?`;
             const [result] = await connection.execute(query, params);
             connection.release();
-            if (result.affectedRows > 0) {
-                return {
-                    success: true,
-                    message: 'User updated successfully'
-                };
-            }
-            else {
-                return {
-                    success: false,
-                    message: 'User not found or no changes made'
-                };
-            }
+            return {
+                success: result.affectedRows > 0,
+                message: result.affectedRows > 0 ? 'User updated successfully' : 'No changes made'
+            };
         }
         catch (error) {
-            console.error('Database error in updateUser:', error);
-            return {
-                success: false,
-                message: 'Failed to update user',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
+            return { success: false, message: 'Failed to update user', error: error.message };
         }
     }
     static async deleteUser(id) {
         try {
             const connection = await database_1.pool.getConnection();
-            const query = `DELETE FROM Users WHERE UserId = ?`;
-            const [result] = await connection.execute(query, [id]);
+            const [result] = await connection.execute(`DELETE FROM Users WHERE UserId = ?`, [id]);
             connection.release();
-            if (result.affectedRows > 0) {
-                return {
-                    success: true,
-                    message: 'User deleted successfully'
-                };
-            }
-            else {
-                return {
-                    success: false,
-                    message: 'User not found'
-                };
-            }
+            return {
+                success: result.affectedRows > 0,
+                message: result.affectedRows > 0 ? 'User deleted successfully' : 'User not found'
+            };
         }
         catch (error) {
-            console.error('Database error in deleteUser:', error);
-            return {
-                success: false,
-                message: 'Failed to delete user',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
+            return { success: false, message: 'Failed to delete user', error: error.message };
         }
     }
     static async updateUserLastLogin(id) {
         try {
             const connection = await database_1.pool.getConnection();
-            const query = `UPDATE Users SET last_login = CURRENT_TIMESTAMP WHERE UserId = ?`;
-            const [result] = await connection.execute(query, [id]);
+            const [result] = await connection.execute(`UPDATE Users SET last_login = CURRENT_TIMESTAMP WHERE UserId = ?`, [id]);
+            connection.release();
+            return {
+                success: result.affectedRows > 0,
+                message: result.affectedRows > 0 ? 'Last login updated' : 'User not found'
+            };
+        }
+        catch (error) {
+            return { success: false, message: 'Failed to update last login', error: error.message };
+        }
+    }
+    static async healthCheck() {
+        try {
+            const connection = await database_1.pool.getConnection();
+            await connection.execute('SELECT 1 + 1 AS result');
+            connection.release();
+            return { success: true, message: 'Database connection OK' };
+        }
+        catch (error) {
+            console.error('Database health check failed:', error);
+            return {
+                success: false,
+                message: 'Database connection failed',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            };
+        }
+    }
+    static async updateCanvas(id, canvasData, name) {
+        try {
+            const connection = await database_1.pool.getConnection();
+            const query = `
+      UPDATE canvases
+      SET canvas_data = ?, name = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `;
+            const [result] = await connection.execute(query, [JSON.stringify(canvasData), name, id]);
             connection.release();
             if (result.affectedRows > 0) {
                 return {
                     success: true,
-                    message: 'User last login updated successfully'
+                    message: 'Canvas updated successfully',
+                    data: { id: parseInt(id), name, canvas_data: canvasData }
                 };
             }
-            else {
-                return {
-                    success: false,
-                    message: 'User not found'
-                };
-            }
+            return { success: false, message: 'Canvas not found' };
         }
         catch (error) {
-            console.error('Database error in updateUserLastLogin:', error);
+            console.error('Error updating canvas:', error);
+            return { success: false, message: 'Failed to update canvas', error: error.message };
+        }
+    }
+    static async deleteCanvas(id) {
+        try {
+            const connection = await database_1.pool.getConnection();
+            const [result] = await connection.execute(`DELETE FROM canvases WHERE id = ?`, [id]);
+            connection.release();
             return {
-                success: false,
-                message: 'Failed to update user last login',
-                error: error instanceof Error ? error.message : 'Unknown error'
+                success: result.affectedRows > 0,
+                message: result.affectedRows > 0
+                    ? 'Canvas deleted successfully'
+                    : 'Canvas not found'
             };
+        }
+        catch (error) {
+            console.error('Error deleting canvas:', error);
+            return { success: false, message: 'Failed to delete canvas', error: error.message };
         }
     }
 }

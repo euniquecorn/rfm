@@ -96,34 +96,34 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `;
         const createUsersTable = `
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        first_name VARCHAR(100) NOT NULL,
-        last_name VARCHAR(100) NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        phone VARCHAR(20),
-        roles JSON NOT NULL,
-        status ENUM('Active', 'Inactive') DEFAULT 'Active',
+      CREATE TABLE IF NOT EXISTS Users (
+        UserId INT AUTO_INCREMENT PRIMARY KEY,
+        FullName VARCHAR(255) NOT NULL,
+        Email VARCHAR(255) UNIQUE NOT NULL,
+        Phone VARCHAR(20),
+        PasswordHash VARCHAR(255) DEFAULT '$2b$10$defaultHashForNewUsers12345678901234567890123456789',
+        Roles JSON NOT NULL,
+        Status ENUM('Active', 'Inactive') DEFAULT 'Active',
         hired_date DATE,
         last_login TIMESTAMP NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        INDEX idx_email (email),
-        INDEX idx_status (status),
+        INDEX idx_email (Email),
+        INDEX idx_status (Status),
         INDEX idx_hired_date (hired_date)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `;
         await connection.execute(createCanvasesTable);
         await connection.execute(createUsersTable);
-        const [rows] = await connection.execute('SELECT COUNT(*) as count FROM users');
+        const [rows] = await connection.execute('SELECT COUNT(*) as count FROM Users');
         const userCount = rows[0].count;
         if (userCount === 0) {
             const insertSampleUsers = `
-        INSERT INTO users (first_name, last_name, email, phone, roles, status, hired_date, last_login) VALUES
-        ('JHON MICHAEL', 'CARREON', 'mikjhoncarreon@gmail.com', '+639603479818', '["Ripper", "Designer"]', 'Active', '2025-10-02', '2025-10-07 09:20:00'),
-        ('LEO', 'ESPINOSA', 'leoespinosa@gmail.com', '+639367946987', '["Seamster", "Cutter"]', 'Active', '2025-09-30', '2025-10-06 08:09:00'),
-        ('BILGIAN A.', 'MUÑOZ', 'bgoutlookph@gmail.com', '+639631897621', '["Designer", "HT Operator"]', 'Active', '2025-09-30', NULL),
-        ('FLORAMAE', 'DIMPAS', 'test@rfm-prints.com', '+63123456789', '["Cutter"]', 'Active', '2025-10-02', NULL);
+        INSERT INTO Users (FullName, Email, Phone, Roles, Status, hired_date, last_login) VALUES
+        ('JHON MICHAEL CARREON', 'mikjhoncarreon@gmail.com', '+639603479818', '["Ripper", "Designer"]', 'Active', '2025-10-02', '2025-10-07 09:20:00'),
+        ('LEO ESPINOSA', 'leoespinosa@gmail.com', '+639367946987', '["Seamster", "Cutter"]', 'Active', '2025-09-30', '2025-10-06 08:09:00'),
+        ('BILGIAN A. MUÑOZ', 'bgoutlookph@gmail.com', '+639631897621', '["Designer", "HT Operator"]', 'Active', '2025-09-30', NULL),
+        ('FLORAMAE DIMPAS', 'test@rfm-prints.com', '+63123456789', '["Cutter"]', 'Active', '2025-10-02', NULL);
       `;
             await connection.execute(insertSampleUsers);
             console.log('✅ Sample users inserted successfully');

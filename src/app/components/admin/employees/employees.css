@@ -6,20 +6,9 @@
 
 .employees-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 30px;
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.employees-header .page-title {
-  font-size: 28px;
-  font-weight: 600;
-  color: #333;
-  margin: 0;
 }
 
 .add-icon {

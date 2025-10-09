@@ -15,6 +15,7 @@ export class AdminEmployeesComponent implements OnInit {
   loading: boolean = true;
   error: string | null = null;
   editingEmployeeId: number | null = null;
+  editingEmployee: UserData | null = null;
   showAddForm: boolean = false;
   editForm: Partial<UserData> = {};
   newEmployeeForm: Partial<UserData> = this.getEmptyForm();
@@ -99,29 +100,23 @@ export class AdminEmployeesComponent implements OnInit {
   }
 
   onEditEmployee(employee: UserData) {
-    if (this.editingEmployeeId === employee.id) {
-      // Cancel editing
-      this.editingEmployeeId = null;
-      this.editForm = {};
-    } else {
-      // Start editing
-      this.editingEmployeeId = employee.id || null;
-      this.editForm = {
-        firstName: employee.firstName,
-        middleName: employee.middleName || '',
-        lastName: employee.lastName,
-        email: employee.email,
-        phone: employee.phone || '',
-        roles: [...employee.roles],
-        status: employee.status
-      };
-      this.showAddForm = false; // Close add form if open
-    }
+    // Store the employee being edited
+    this.editingEmployee = employee;
+    this.editingEmployeeId = employee.id || null;
+    this.editForm = {
+      firstName: employee.firstName,
+      middleName: employee.middleName || '',
+      lastName: employee.lastName,
+      email: employee.email,
+      phone: employee.phone || '',
+      roles: employee.roles ? [...employee.roles] : [],
+      status: employee.status
+    };
     this.cdr.markForCheck();
   }
 
-  saveEmployee(employee: UserData) {
-    if (!employee.id) return;
+  saveEmployee(employee: UserData | null) {
+    if (!employee || !employee.id) return;
 
     const updatedData: Partial<UserData> = {
       firstName: this.editForm.firstName,
@@ -137,6 +132,7 @@ export class AdminEmployeesComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.editingEmployeeId = null;
+          this.editingEmployee = null;
           this.editForm = {};
           this.loadEmployees();
         } else {

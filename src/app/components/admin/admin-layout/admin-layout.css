@@ -21,10 +21,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.logo-section {
-  display: none; /* Hidden on main header, shown only on sidebar */
-}
-
 .header-center {
   display: flex;
   align-items: center;
@@ -195,6 +191,7 @@
   padding: 24px;
   min-height: calc(100vh - 70px);
   background-color: #f8f9fa;
+  width: calc(100% - 260px);
 }
 
 /* Responsive Design */
@@ -214,6 +211,7 @@
   
   .main-content {
     margin-left: 0;
+    width: 100%;
   }
   
   .menu-toggle {
