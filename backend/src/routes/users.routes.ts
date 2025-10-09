@@ -3,182 +3,133 @@ import { DatabaseService } from '../services/database.service';
 
 const router = Router();
 
-// Get all users/employees
+/**
+ * GET /api/users
+ * Optional query params: role, status
+ */
 router.get('/', async (req: Request, res: Response) => {
   try {
     const { role, status } = req.query;
-    
-    const result = await DatabaseService.getUsers(role as string, status as string);
-    
-    if (result.success) {
-      return res.json(result);
-    } else {
-      return res.status(500).json(result);
-    }
+    const result = await DatabaseService.getUsers(
+      role as string | undefined,
+      status as string | undefined
+    );
+    res.status(result.success ? 200 : 500).json(result);
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Failed to fetch users', 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    console.error('Error fetching users:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch users',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
 
-// Get user by ID
+/**
+ * GET /api/users/:id
+ */
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
-    if (!id || isNaN(parseInt(id))) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Valid user ID is required' 
-      });
-    }
-    
     const result = await DatabaseService.getUser(id);
-    
-    if (result.success) {
-      return res.json(result);
-    } else {
-      return res.status(404).json(result);
-    }
+    res.status(result.success ? 200 : 404).json(result);
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Failed to fetch user', 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    console.error('Error fetching user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
 
-// Create new user
+/**
+ * POST /api/users
+ * Body: { fullName, email, phone, roles, status?, hired_date? }
+ */
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { firstName, middleName, lastName, email, phone, roles, status, hiredDate } = req.body;
-    
-    if (!firstName || !lastName || !email || !roles) {
+    const { fullName, email, phone, roles, status, hired_date } = req.body;
+
+    if (!fullName || !email || !roles) {
       return res.status(400).json({
         success: false,
-        message: 'First name, last name, email, and roles are required'
+        message: 'Full name, email, and roles are required',
       });
     }
-    
+
     const result = await DatabaseService.createUser({
-      firstName,
-      middleName,
-      lastName,
-      email,
-      phone,
-      roles,
-      status: status || 'Active',
-      hiredDate
+      FullName: fullName,
+      Email: email,
+      Phone: phone,
+      Roles: roles,
+      Status: status || 'Active',
+      hired_date,
     });
-    
-    if (result.success) {
-      return res.status(201).json(result);
-    } else {
-      return res.status(400).json(result);
-    }
+
+
+    res.status(result.success ? 201 : 400).json(result);
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Failed to create user', 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    console.error('Error creating user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create user',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
 
-// Update user
+/**
+ * PUT /api/users/:id
+ * Body: { fullName?, email?, phone?, roles?, status?, hired_date? }
+ */
 router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { firstName, middleName, lastName, email, phone, roles, status, hiredDate } = req.body;
-    
-    if (!id || isNaN(parseInt(id))) {
-      return res.status(400).json({
-        success: false,
-        message: 'Valid user ID is required'
-      });
-    }
-    
-    const result = await DatabaseService.updateUser(id, {
-      firstName,
-      middleName,
-      lastName,
-      email,
-      phone,
-      roles,
-      status,
-      hiredDate
-    });
-    
-    if (result.success) {
-      return res.json(result);
-    } else {
-      return res.status(404).json(result);
-    }
+    const result = await DatabaseService.updateUser(id, req.body);
+    res.status(result.success ? 200 : 400).json(result);
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Failed to update user', 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    console.error('Error updating user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update user',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
 
-// Delete user
+/**
+ * DELETE /api/users/:id
+ */
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
-    if (!id || isNaN(parseInt(id))) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Valid user ID is required' 
-      });
-    }
-    
     const result = await DatabaseService.deleteUser(id);
-    
-    if (result.success) {
-      return res.json(result);
-    } else {
-      return res.status(404).json(result);
-    }
+    res.status(result.success ? 200 : 404).json(result);
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Failed to delete user', 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    console.error('Error deleting user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete user',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
 
-// Update user last login
-router.patch('/:id/login', async (req: Request, res: Response) => {
+/**
+ * PATCH /api/users/:id/last-login
+ */
+router.patch('/:id/last-login', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
-    if (!id || isNaN(parseInt(id))) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Valid user ID is required' 
-      });
-    }
-    
     const result = await DatabaseService.updateUserLastLogin(id);
-    
-    if (result.success) {
-      return res.json(result);
-    } else {
-      return res.status(404).json(result);
-    }
+    res.status(result.success ? 200 : 400).json(result);
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Failed to update user login', 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    console.error('Error updating last login:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update last login',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });

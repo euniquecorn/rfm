@@ -49,7 +49,7 @@ router.get('/:id', async (req, res) => {
 });
 router.post('/', async (req, res) => {
     try {
-        const { firstName, lastName, email, phone, roles, status, hiredDate } = req.body;
+        const { firstName, middleName, lastName, email, phone, roles, status, hiredDate } = req.body;
         if (!firstName || !lastName || !email || !roles) {
             return res.status(400).json({
                 success: false,
@@ -58,6 +58,7 @@ router.post('/', async (req, res) => {
         }
         const result = await database_service_1.DatabaseService.createUser({
             firstName,
+            middleName,
             lastName,
             email,
             phone,
@@ -83,7 +84,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { firstName, lastName, email, phone, roles, status, hiredDate } = req.body;
+        const { firstName, middleName, lastName, email, phone, roles, status, hiredDate } = req.body;
         if (!id || isNaN(parseInt(id))) {
             return res.status(400).json({
                 success: false,
@@ -92,6 +93,7 @@ router.put('/:id', async (req, res) => {
         }
         const result = await database_service_1.DatabaseService.updateUser(id, {
             firstName,
+            middleName,
             lastName,
             email,
             phone,

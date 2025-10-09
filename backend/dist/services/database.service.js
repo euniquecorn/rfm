@@ -243,7 +243,7 @@ class DatabaseService {
         try {
             const connection = await database_1.pool.getConnection();
             let query = `
-        SELECT UserID, FullName, Email, Phone, Roles, Status, hired_date, last_login, created_at
+        SELECT UserId, FullName, Email, Phone, Roles, Status, hired_date, last_login, created_at
         FROM Users
       `;
             const conditions = [];
@@ -264,16 +264,30 @@ class DatabaseService {
             connection.release();
             const users = rows.map(row => {
                 const fullName = row['FullName'] || '';
-                const nameParts = fullName.split(' ');
-                const firstName = nameParts[0] || '';
-                const lastName = nameParts.slice(1).join(' ') || '';
+                const nameParts = fullName.trim().split(/\s+/);
+                let firstName = '';
+                let middleName = undefined;
+                let lastName = '';
+                if (nameParts.length === 1) {
+                    firstName = nameParts[0];
+                }
+                else if (nameParts.length === 2) {
+                    firstName = nameParts[0];
+                    lastName = nameParts[1];
+                }
+                else if (nameParts.length >= 3) {
+                    firstName = nameParts[0];
+                    lastName = nameParts[nameParts.length - 1];
+                    middleName = nameParts.slice(1, -1).join(' ');
+                }
                 return {
-                    id: row['UserID'],
+                    id: row['UserId'],
                     firstName: firstName,
+                    middleName: middleName,
                     lastName: lastName,
                     email: row['Email'],
                     phone: row['Phone'],
-                    roles: row['Roles'] ? row['Roles'].split(',').map((r) => r.trim()) : [],
+                    roles: this.parseRoles(row['Roles']),
                     status: row['Status'],
                     hiredDate: row['hired_date'],
                     lastLogin: row['last_login'],
@@ -299,9 +313,9 @@ class DatabaseService {
         try {
             const connection = await database_1.pool.getConnection();
             const query = `
-        SELECT UserID, FullName, Email, Phone, Roles, Status, hired_date, last_login, created_at
+        SELECT UserId, FullName, Email, Phone, Roles, Status, hired_date, last_login, created_at
         FROM Users
-        WHERE UserID = ?
+        WHERE UserId = ?
       `;
             const [rows] = await connection.execute(query, [id]);
             connection.release();
@@ -313,18 +327,32 @@ class DatabaseService {
             }
             const user = rows[0];
             const fullName = user['FullName'] || '';
-            const nameParts = fullName.split(' ');
-            const firstName = nameParts[0] || '';
-            const lastName = nameParts.slice(1).join(' ') || '';
+            const nameParts = fullName.trim().split(/\s+/);
+            let firstName = '';
+            let middleName = undefined;
+            let lastName = '';
+            if (nameParts.length === 1) {
+                firstName = nameParts[0];
+            }
+            else if (nameParts.length === 2) {
+                firstName = nameParts[0];
+                lastName = nameParts[1];
+            }
+            else if (nameParts.length >= 3) {
+                firstName = nameParts[0];
+                lastName = nameParts[nameParts.length - 1];
+                middleName = nameParts.slice(1, -1).join(' ');
+            }
             return {
                 success: true,
                 data: {
-                    id: user['UserID'],
+                    id: user['UserId'],
                     firstName: firstName,
+                    middleName: middleName,
                     lastName: lastName,
                     email: user['Email'],
                     phone: user['Phone'],
-                    roles: user['Roles'] ? user['Roles'].split(',').map((r) => r.trim()) : [],
+                    roles: this.parseRoles(user['Roles']),
                     status: user['Status'],
                     hiredDate: user['hired_date'],
                     lastLogin: user['last_login'],
@@ -345,16 +373,24 @@ class DatabaseService {
     static async createUser(userData) {
         try {
             const connection = await database_1.pool.getConnection();
+            const nameParts = [userData.firstName];
+            if (userData.middleName) {
+                nameParts.push(userData.middleName);
+            }
+            nameParts.push(userData.lastName);
+            const fullName = nameParts.join(' ');
+            const rolesString = Array.isArray(userData.roles) ? userData.roles.join(', ') : userData.roles;
             const query = `
-        INSERT INTO users (first_name, last_name, email, phone, roles, status, hired_date)
+        INSERT INTO Users (FullName, Email, Phone, PasswordHash, Roles, Status, hired_date)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
+            const defaultPasswordHash = '$2b$10$defaultHashForNewUsers12345678901234567890123456789';
             const [result] = await connection.execute(query, [
-                userData.firstName,
-                userData.lastName,
+                fullName,
                 userData.email,
-                userData.phone || null,
-                JSON.stringify(userData.roles),
+                userData.phone || '',
+                defaultPasswordHash,
+                rolesString,
                 userData.status,
                 userData.hiredDate || null
             ]);
@@ -391,28 +427,55 @@ class DatabaseService {
             const connection = await database_1.pool.getConnection();
             const updateFields = [];
             const params = [];
-            if (userData.firstName !== undefined) {
-                updateFields.push('first_name = ?');
-                params.push(userData.firstName);
-            }
-            if (userData.lastName !== undefined) {
-                updateFields.push('last_name = ?');
-                params.push(userData.lastName);
+            if (userData.firstName !== undefined || userData.middleName !== undefined || userData.lastName !== undefined) {
+                const [rows] = await connection.execute('SELECT FullName FROM Users WHERE UserId = ?', [id]);
+                if (rows.length > 0) {
+                    const currentFullName = rows[0]['FullName'] || '';
+                    const currentParts = currentFullName.trim().split(/\s+/);
+                    let firstName = userData.firstName;
+                    let middleName = userData.middleName;
+                    let lastName = userData.lastName;
+                    if (firstName === undefined) {
+                        firstName = currentParts[0] || '';
+                    }
+                    if (lastName === undefined) {
+                        if (currentParts.length === 1) {
+                            lastName = '';
+                        }
+                        else {
+                            lastName = currentParts[currentParts.length - 1];
+                        }
+                    }
+                    if (middleName === undefined && currentParts.length >= 3) {
+                        middleName = currentParts.slice(1, -1).join(' ');
+                    }
+                    const nameParts = [firstName];
+                    if (middleName) {
+                        nameParts.push(middleName);
+                    }
+                    if (lastName) {
+                        nameParts.push(lastName);
+                    }
+                    const fullName = nameParts.join(' ');
+                    updateFields.push('FullName = ?');
+                    params.push(fullName);
+                }
             }
             if (userData.email !== undefined) {
-                updateFields.push('email = ?');
+                updateFields.push('Email = ?');
                 params.push(userData.email);
             }
             if (userData.phone !== undefined) {
-                updateFields.push('phone = ?');
+                updateFields.push('Phone = ?');
                 params.push(userData.phone);
             }
             if (userData.roles !== undefined) {
-                updateFields.push('roles = ?');
-                params.push(JSON.stringify(userData.roles));
+                const rolesString = Array.isArray(userData.roles) ? userData.roles.join(', ') : userData.roles;
+                updateFields.push('Roles = ?');
+                params.push(rolesString);
             }
             if (userData.status !== undefined) {
-                updateFields.push('status = ?');
+                updateFields.push('Status = ?');
                 params.push(userData.status);
             }
             if (userData.hiredDate !== undefined) {
@@ -425,9 +488,8 @@ class DatabaseService {
                     message: 'No fields to update'
                 };
             }
-            updateFields.push('updated_at = CURRENT_TIMESTAMP');
             params.push(id);
-            const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`;
+            const query = `UPDATE Users SET ${updateFields.join(', ')} WHERE UserId = ?`;
             const [result] = await connection.execute(query, params);
             connection.release();
             if (result.affectedRows > 0) {
@@ -455,7 +517,7 @@ class DatabaseService {
     static async deleteUser(id) {
         try {
             const connection = await database_1.pool.getConnection();
-            const query = `DELETE FROM users WHERE id = ?`;
+            const query = `DELETE FROM Users WHERE UserId = ?`;
             const [result] = await connection.execute(query, [id]);
             connection.release();
             if (result.affectedRows > 0) {
@@ -483,7 +545,7 @@ class DatabaseService {
     static async updateUserLastLogin(id) {
         try {
             const connection = await database_1.pool.getConnection();
-            const query = `UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?`;
+            const query = `UPDATE Users SET last_login = CURRENT_TIMESTAMP WHERE UserId = ?`;
             const [result] = await connection.execute(query, [id]);
             connection.release();
             if (result.affectedRows > 0) {
