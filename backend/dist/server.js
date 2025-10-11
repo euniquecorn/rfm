@@ -11,6 +11,7 @@ const bodyParser = require("body-parser");
 const database_1 = require("./config/database");
 const canvas_routes_1 = __importDefault(require("./routes/canvas.routes"));
 const users_routes_1 = __importDefault(require("./routes/users.routes"));
+const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const database_service_1 = require("./services/database.service");
 const app = express();
 exports.app = app;
@@ -36,6 +37,7 @@ app.get('/api/health', async (req, res) => {
         });
     }
 });
+app.use('/api/auth', auth_routes_1.default);
 app.use('/api/canvas', canvas_routes_1.default);
 app.use('/api/users', users_routes_1.default);
 app.get('/', (req, res) => {
@@ -44,6 +46,12 @@ app.get('/', (req, res) => {
         version: '1.0.0',
         endpoints: {
             health: '/api/health',
+            auth: {
+                register: 'POST /api/auth/register',
+                login: 'POST /api/auth/login',
+                logout: 'POST /api/auth/logout',
+                me: 'GET /api/auth/me'
+            },
             canvas: {
                 save: 'POST /api/canvas/save',
                 list: 'GET /api/canvas/list',

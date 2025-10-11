@@ -7,10 +7,42 @@
     </div>
     
     <div class="header-right">
-      <div class="admin-profile">
-        <span class="admin-label">Administrator</span>
-        <div class="profile-avatar"></div>
-        <button class="profile-dropdown" (click)="logout()">▼</button>
+      <!-- Bootstrap 5 Dropdown -->
+      <div class="dropdown">
+        <button class="btn btn-link text-decoration-none dropdown-toggle d-flex align-items-center gap-2" 
+                type="button" 
+                id="adminDropdown" 
+                data-bs-toggle="dropdown" 
+                aria-expanded="false">
+          <i class="bi bi-person-circle fs-4"></i>
+          <span class="text-dark">{{ authService.currentUser()?.name || 'ADMIN USER' }}</span>
+        </button>
+        
+        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="adminDropdown">
+          <li>
+            <h6 class="dropdown-header">
+              <strong>{{ authService.currentUser()?.name }}</strong><br>
+              <small class="text-muted">{{ authService.currentUser()?.email }}</small>
+            </h6>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item" href="#" (click)="openProfileModal(); $event.preventDefault()">
+              <i class="bi bi-person"></i> My Profile
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#" (click)="goToCustomerPanel(); $event.preventDefault()">
+              <i class="bi bi-shop"></i> Customer Panel
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item text-danger" href="#" (click)="logout(); $event.preventDefault()">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   </header>
@@ -44,4 +76,51 @@
   <main class="main-content">
     <router-outlet></router-outlet>
   </main>
+</div>
+
+<!-- Profile Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="profileModalLabel">
+          <i class="bi bi-person-circle"></i> My Profile
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="authService.currentUser()" class="profile-details">
+          <div class="row mb-3">
+            <div class="col-4 fw-bold">Full Name:</div>
+            <div class="col-8">{{ authService.currentUser()?.name }}</div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-4 fw-bold">Email:</div>
+            <div class="col-8">{{ authService.currentUser()?.email }}</div>
+          </div>
+          <div class="row mb-3" *ngIf="authService.currentUser()?.phone">
+            <div class="col-4 fw-bold">Phone:</div>
+            <div class="col-8">{{ authService.currentUser()?.phone }}</div>
+          </div>
+          <div class="row mb-3" *ngIf="authService.currentUser()?.roles">
+            <div class="col-4 fw-bold">Roles:</div>
+            <div class="col-8">
+              <span *ngFor="let role of authService.currentUser()?.roles || []" class="badge bg-secondary me-1">
+                {{ role }}
+              </span>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-4 fw-bold">Account Type:</div>
+            <div class="col-8">
+              <span class="badge bg-primary">Employee/Admin</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>

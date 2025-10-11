@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+
+// Declare Bootstrap for TypeScript
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-admin-layout',
@@ -9,7 +13,7 @@ import { RouterModule, Router } from '@angular/router';
   templateUrl: './admin-layout.html',
   styleUrls: ['./admin-layout.css']
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnInit {
   currentPage = 'Dashboard';
   
   menuItems = [
@@ -22,15 +26,39 @@ export class AdminLayoutComponent {
     { name: 'Reports', icon: '📈', route: '/admin/reports' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    protected authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    // Update page title based on current route
+    const currentRoute = this.router.url;
+    const activeItem = this.menuItems.find(item => currentRoute.includes(item.route));
+    if (activeItem) {
+      this.currentPage = activeItem.name;
+    }
+  }
 
   navigateTo(item: any) {
     this.currentPage = item.name;
     this.router.navigate([item.route]);
   }
 
+  openProfileModal() {
+    const modalElement = document.getElementById('profileModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  goToCustomerPanel() {
+    // Navigate to customer-facing apparel page
+    this.router.navigate(['/apparel']);
+  }
+
   logout() {
-    // Add logout logic here
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }

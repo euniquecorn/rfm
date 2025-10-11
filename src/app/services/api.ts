@@ -31,6 +31,33 @@ export interface UserData {
   updated_at?: string;
 }
 
+export interface CustomerAccount {
+  id?: number;
+  email: string;
+  fullName: string;
+  phone?: string;
+  address?: string;
+  created_at?: string;
+  last_login?: string | null;
+}
+
+export interface AuthUser {
+  id: number;
+  email: string;
+  name: string;
+  role: 'customer' | 'employee';
+  phone?: string;
+  address?: string;
+  roles?: string[];
+}
+
+export interface AuthResponse {
+  success: boolean;
+  user?: AuthUser;
+  message?: string;
+  error?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })

@@ -49,38 +49,34 @@
   align-items: center;
 }
 
-.admin-profile {
+/* Bootstrap Dropdown Customization */
+.dropdown-toggle::after {
+  margin-left: 0.5em;
+}
+
+.dropdown-menu {
+  min-width: 250px;
+}
+
+.dropdown-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background-color: #ff6b6b;
-  padding: 8px 16px;
-  border-radius: 25px;
-  color: white;
+  gap: 10px;
+  padding: 10px 20px;
 }
 
-.admin-label {
-  font-size: 14px;
-  font-weight: 500;
+.dropdown-item i {
+  width: 20px;
+  text-align: center;
 }
 
-.profile-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.3);
-  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>');
-  background-size: 20px;
-  background-position: center;
-  background-repeat: no-repeat;
+.dropdown-header {
+  padding: 12px 20px;
 }
 
-.profile-dropdown {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-size: 12px;
+/* Profile Modal */
+.profile-details .row {
+  margin-bottom: 1rem;
 }
 
 /* Sidebar */

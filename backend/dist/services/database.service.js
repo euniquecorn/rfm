@@ -9,14 +9,23 @@ class DatabaseService {
                 return raw;
             if (raw == null)
                 return [];
-            const asString = Buffer.isBuffer(raw) ? raw.toString('utf8') : String(raw);
-            const trimmed = asString.trim();
-            if (trimmed.startsWith('[')) {
-                return JSON.parse(trimmed);
+            if (Buffer.isBuffer(raw)) {
+                const str = raw.toString('utf8').trim();
+                if (str.startsWith('['))
+                    return JSON.parse(str);
+                return str.split(',').map(r => r.trim()).filter(Boolean);
             }
-            return trimmed.split(',').map(r => r.trim()).filter(Boolean);
+            if (typeof raw === 'object') {
+                return Array.isArray(raw) ? raw : [];
+            }
+            const asString = String(raw).trim();
+            if (asString.startsWith('[')) {
+                return JSON.parse(asString);
+            }
+            return asString.split(',').map(r => r.trim()).filter(Boolean);
         }
-        catch {
+        catch (error) {
+            console.error('Error parsing roles:', error, 'Raw value:', raw);
             return [];
         }
     }
