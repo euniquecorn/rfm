@@ -6,6 +6,10 @@
 
 .products-header {
   margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
 }
 
 .products-header h2 {
@@ -41,3 +45,4 @@
   color: #7f8c8d;
   margin: 0;
 }
+
