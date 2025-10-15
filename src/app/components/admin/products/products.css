@@ -46,3 +46,6 @@
   margin: 0;
 }
 
+#addProductModal .modal-body form .mb-3:last-child {
+  margin-bottom: 20px;
+}
