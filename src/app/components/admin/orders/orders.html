@@ -1,14 +1,60 @@
 <div class="orders-container">
-  <div class="orders-header">
-    <h2>Orders Management</h2>
-    <p>Manage and track all customer orders</p>
+  <button class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addOrdersModal">
+    <i class="bi bi-plus circle me-2"></i>
+    Add Orders
+  </button>
+
+<!-- Kanban container -->
+<div class="kanban-wrapper mt-3">
+  <div class="kanban-header d-flex align-items-center justify-content-between mb-2">
+    <h5 class="m-0">Production Board</h5>
+    <small class="text-muted">Drag a card to move between stages</small>
   </div>
-  
-  <div class="orders-content">
-    <!-- Placeholder content for orders -->
-    <div class="placeholder-message">
-      <h3>Orders Content</h3>
-      <p>This page is ready for orders management implementation</p>
+
+  <div class="kanban-board" role="region" aria-label="Production Kanban">
+    <!-- Iterate stages -->
+    <div class="kanban-column" *ngFor="let s of stages">
+      <div class="column-title">
+        <span>{{ s.title }}</span>
+      </div>
+
+      <div class="kanban-list" cdkDropList [id]="s.key" [cdkDropListData]="s.data"
+        [cdkDropListConnectedTo]="connectedLists" (cdkDropListDropped)="onDrop($event, s.key)">
+        <div class="kanban-card" *ngFor="let order of s.data; trackBy: trackByOrder" cdkDrag [ngClass]="{
+            'card-designing': s.key === 'designing',
+            'card-ripping': s.key === 'ripping',
+            'card-heatpress': s.key === 'heatpress',
+            'card-cutting': s.key === 'cutting',
+            'card-assembly': s.key === 'assembly',
+            'card-qc': s.key === 'qc',
+            'card-done': s.key === 'done'
+          }">
+          <div class="card-head d-flex justify-content-between">
+            <div>
+              <div class="ref">{{ order.orderRef }}</div>
+              <div class="client">{{ order.client }}</div>
+            </div>
+            <div class="qty-badge">Qty {{ order.qty }}</div>
+          </div>
+
+          <div class="card-meta d-flex justify-content-between align-items-center mt-2">
+            <small class="date">{{ order.date || '' }}</small>
+
+            <select class="form-select form-select-sm status-select"
+              (change)="changeStatus(order, $any($event.target).value)">
+              <option *ngFor="let st of stages" [value]="st.key" [selected]="st.data.includes(order)">{{ st.title }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Empty placeholder when list has no cards -->
+        <div class="empty-placeholder" *ngIf="s.data.length === 0">
+          <small class="text-muted">No orders</small>
+        </div>
+      </div>
     </div>
   </div>
+</div>
+
 </div>
