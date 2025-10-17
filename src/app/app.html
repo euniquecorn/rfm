@@ -1,23 +1,19 @@
-<<<<<<< HEAD
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-=======
 <!-- Navigation Bar (Only show for customer routes, hide for admin routes) -->
 <nav *ngIf="!isAdminRoute()" class="navbar navbar-expand-lg navbar-dark bg-dark">
->>>>>>> signup-dev
   <div class="container">
     <a class="navbar-brand" routerLink="/">
       <div class="logo">RFM</div>
     </a>
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
-    
+
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav mx-auto">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+          <a class="nav-link" routerLink="/" routerLinkActive="active"
+            [routerLinkActiveOptions]="{exact: true}">Home</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" routerLink="/apparel" routerLinkActive="active">Apparel</a>
@@ -29,39 +25,20 @@
           <a class="nav-link" routerLink="/cart" routerLinkActive="active">Cart</a>
         </li>
       </ul>
-      
+
       <ul class="navbar-nav">
-<<<<<<< HEAD
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-            Account
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
-            <li><a class="dropdown-item" routerLink="/account-settings">Account Settings</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" routerLink="/logout">Logout</a></li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/signup" routerLinkActive="active">Sign Up</a>
-        </li>
-=======
         <!-- Show when user is NOT authenticated -->
-        @if (!authService.isAuthenticated()) {
+        <ng-container *ngIf="!authService.isAuthenticated()">
           <li class="nav-item">
             <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" routerLink="/signup" routerLinkActive="active">Sign Up</a>
           </li>
-        }
+        </ng-container>
 
         <!-- Show when user IS authenticated -->
-        @if (authService.isAuthenticated()) {
+        <ng-container *ngIf="authService.isAuthenticated()">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
               <i class="bi bi-person-circle"></i> {{ authService.currentUser()?.name || 'Account' }}
@@ -72,20 +49,28 @@
                   <small class="text-muted">{{ authService.currentUser()?.email }}</small>
                 </span>
               </li>
-              <li><hr class="dropdown-divider"></li>
-              @if (authService.isAdmin()) {
-                <li><a class="dropdown-item" routerLink="/admin">
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+
+              <!-- Show admin link if user is admin -->
+              <li *ngIf="authService.isAdmin()">
+                <a class="dropdown-item" routerLink="/admin">
                   <i class="bi bi-speedometer2"></i> Admin Panel
-                </a></li>
-                <li><hr class="dropdown-divider"></li>
-              }
-              <li><a class="dropdown-item" href="#" (click)="logout(); $event.preventDefault()">
-                <i class="bi bi-box-arrow-right"></i> Logout
-              </a></li>
+                </a>
+              </li>
+              <li *ngIf="authService.isAdmin()">
+                <hr class="dropdown-divider">
+              </li>
+
+              <li>
+                <a class="dropdown-item" href="#" (click)="logout(); $event.preventDefault()">
+                  <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+              </li>
             </ul>
           </li>
-        }
->>>>>>> signup-dev
+        </ng-container>
       </ul>
     </div>
   </div>

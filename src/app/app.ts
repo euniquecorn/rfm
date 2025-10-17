@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Component, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
 
@@ -12,8 +12,6 @@ import { AuthService } from './services/auth.service';
 })
 export class App {
   protected readonly title = signal('Apparel Store');
-<<<<<<< HEAD
-=======
   protected isAdminRoute = signal(false);
 
   constructor(
@@ -32,5 +30,4 @@ export class App {
   logout(): void {
     this.authService.logout();
   }
->>>>>>> signup-dev
 }
