@@ -1,10 +1,7 @@
 import * as dotenv from 'dotenv';
-import * as mysql from 'mysql2/promise';
-<<<<<<< HEAD
-=======
 import * as fs from 'fs';
+import * as mysql from 'mysql2/promise';
 import * as path from 'path';
->>>>>>> signup-dev
 
 // Load environment variables
 dotenv.config();
@@ -18,10 +15,7 @@ export interface DatabaseConfig {
   connectionLimit: number;
   acquireTimeout: number;
   timeout: number;
-<<<<<<< HEAD
-=======
   ssl?: any;
->>>>>>> signup-dev
 }
 
 export const dbConfig: DatabaseConfig = {
@@ -35,8 +29,6 @@ export const dbConfig: DatabaseConfig = {
   timeout: 60000,
 };
 
-<<<<<<< HEAD
-=======
 // Add SSL configuration for Aiven cloud database
 if (process.env['DB_HOST']?.includes('aivencloud.com')) {
   const certPath = path.join(__dirname, '../../certs/ca.pem');
@@ -55,7 +47,6 @@ if (process.env['DB_HOST']?.includes('aivencloud.com')) {
   }
 }
 
->>>>>>> signup-dev
 // Create connection pool
 export const pool = mysql.createPool(dbConfig);
 
@@ -89,10 +80,7 @@ export async function initializeDatabase(): Promise<void> {
         INDEX idx_created_at (created_at)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `;
-    
-<<<<<<< HEAD
     await connection.execute(createCanvasesTable);
-=======
     // Create Users table if it doesn't exist
     const createUsersTable = `
       CREATE TABLE IF NOT EXISTS Users (
@@ -131,7 +119,6 @@ export async function initializeDatabase(): Promise<void> {
       await connection.execute(insertSampleUsers);
       console.log('✅ Sample users inserted successfully');
     }
->>>>>>> signup-dev
     console.log('✅ Database tables initialized successfully');
     
     connection.release();
