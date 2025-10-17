@@ -24,11 +24,11 @@ export class AdminOrdersComponent {
   // Temporary data to check the layout
   designing: Order[] = [
     { orderRef: 'ORD-001', client: 'Juan Dela Cruz', date: '2024-06-01', status: 'Designing', qty: 50 },
-    { orderRef: 'ORD-002', client: 'Maria Clara', date: '2024-06-02', status: 'Designing', qty: 30 }
+    { orderRef: 'ORD-002', client: 'Maria Clara', date: '2024-06-02', status: 'Designing', qty: 30 },
+    { orderRef: 'ORD-003', client: 'Maria Juana', date: '2024-06-03', status: 'Designing', qty: 30 }
   ];
 
   ripping: Order[] = [
-    // example, keep empty if you want
   ];
   heatpress: Order[] = [];
   cutting: Order[] = [];
