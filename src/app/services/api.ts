@@ -16,11 +16,53 @@ export interface ApiResponse<T = any> {
   error?: string;
 }
 
+export interface UserData {
+  id?: number;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  roles: string[];
+  status: 'Active' | 'Inactive';
+  hiredDate?: string;
+  lastLogin?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CustomerAccount {
+  id?: number;
+  email: string;
+  fullName: string;
+  phone?: string;
+  address?: string;
+  created_at?: string;
+  last_login?: string | null;
+}
+
+export interface AuthUser {
+  id: number;
+  email: string;
+  name: string;
+  role: 'customer' | 'employee';
+  phone?: string;
+  address?: string;
+  roles?: string[];
+}
+
+export interface AuthResponse {
+  success: boolean;
+  user?: AuthUser;
+  message?: string;
+  error?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = '/api';
+  private baseUrl = 'http://localhost:3001/api';
 
   constructor(private http: HttpClient) { }
 
@@ -43,5 +85,37 @@ export class ApiService {
 
   getCanvas(id: string): Observable<ApiResponse<CanvasData>> {
     return this.http.get<ApiResponse<CanvasData>>(`${this.baseUrl}/canvas/${id}`);
+  }
+
+  // User/Employee operations
+  getUsers(role?: string, status?: string): Observable<ApiResponse<UserData[]>> {
+    let params = '';
+    if (role || status) {
+      const queryParams = [];
+      if (role) queryParams.push(`role=${encodeURIComponent(role)}`);
+      if (status) queryParams.push(`status=${encodeURIComponent(status)}`);
+      params = '?' + queryParams.join('&');
+    }
+    return this.http.get<ApiResponse<UserData[]>>(`${this.baseUrl}/users${params}`);
+  }
+
+  getUser(id: string): Observable<ApiResponse<UserData>> {
+    return this.http.get<ApiResponse<UserData>>(`${this.baseUrl}/users/${id}`);
+  }
+
+  createUser(userData: Omit<UserData, 'id' | 'created_at' | 'updated_at'>): Observable<ApiResponse<UserData>> {
+    return this.http.post<ApiResponse<UserData>>(`${this.baseUrl}/users`, userData);
+  }
+
+  updateUser(id: string, userData: Partial<Omit<UserData, 'id' | 'created_at' | 'updated_at'>>): Observable<ApiResponse<UserData>> {
+    return this.http.put<ApiResponse<UserData>>(`${this.baseUrl}/users/${id}`, userData);
+  }
+
+  deleteUser(id: string): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/users/${id}`);
+  }
+
+  updateUserLastLogin(id: string): Observable<ApiResponse> {
+    return this.http.patch<ApiResponse>(`${this.baseUrl}/users/${id}/login`, {});
   }
 }

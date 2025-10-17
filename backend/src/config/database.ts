@@ -1,5 +1,10 @@
 import * as dotenv from 'dotenv';
 import * as mysql from 'mysql2/promise';
+<<<<<<< HEAD
+=======
+import * as fs from 'fs';
+import * as path from 'path';
+>>>>>>> signup-dev
 
 // Load environment variables
 dotenv.config();
@@ -13,6 +18,10 @@ export interface DatabaseConfig {
   connectionLimit: number;
   acquireTimeout: number;
   timeout: number;
+<<<<<<< HEAD
+=======
+  ssl?: any;
+>>>>>>> signup-dev
 }
 
 export const dbConfig: DatabaseConfig = {
@@ -26,6 +35,27 @@ export const dbConfig: DatabaseConfig = {
   timeout: 60000,
 };
 
+<<<<<<< HEAD
+=======
+// Add SSL configuration for Aiven cloud database
+if (process.env['DB_HOST']?.includes('aivencloud.com')) {
+  const certPath = path.join(__dirname, '../../certs/ca.pem');
+  if (fs.existsSync(certPath)) {
+    dbConfig.ssl = {
+      ca: fs.readFileSync(certPath),
+      rejectUnauthorized: true
+    };
+    console.log('✅ SSL certificate loaded for Aiven connection');
+  } else {
+    // Fallback for Aiven - they also accept SSL without local cert
+    dbConfig.ssl = {
+      rejectUnauthorized: false
+    };
+    console.log('⚠️ Using SSL without local certificate for Aiven connection');
+  }
+}
+
+>>>>>>> signup-dev
 // Create connection pool
 export const pool = mysql.createPool(dbConfig);
 
@@ -60,7 +90,48 @@ export async function initializeDatabase(): Promise<void> {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `;
     
+<<<<<<< HEAD
     await connection.execute(createCanvasesTable);
+=======
+    // Create Users table if it doesn't exist
+    const createUsersTable = `
+      CREATE TABLE IF NOT EXISTS Users (
+        UserId INT AUTO_INCREMENT PRIMARY KEY,
+        FullName VARCHAR(255) NOT NULL,
+        Email VARCHAR(255) UNIQUE NOT NULL,
+        Phone VARCHAR(20),
+        PasswordHash VARCHAR(255) DEFAULT '$2b$10$defaultHashForNewUsers12345678901234567890123456789',
+        Roles JSON NOT NULL,
+        Status ENUM('Active', 'Inactive') DEFAULT 'Active',
+        hired_date DATE,
+        last_login TIMESTAMP NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_email (Email),
+        INDEX idx_status (Status),
+        INDEX idx_hired_date (hired_date)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `;
+    
+    await connection.execute(createCanvasesTable);
+    await connection.execute(createUsersTable);
+    
+    // Insert sample users if table is empty
+    const [rows] = await connection.execute('SELECT COUNT(*) as count FROM Users');
+    const userCount = (rows as any)[0].count;
+    
+    if (userCount === 0) {
+      const insertSampleUsers = `
+        INSERT INTO Users (FullName, Email, Phone, Roles, Status, hired_date, last_login) VALUES
+        ('JHON MICHAEL CARREON', 'mikjhoncarreon@gmail.com', '+639603479818', '["Ripper", "Designer"]', 'Active', '2025-10-02', '2025-10-07 09:20:00'),
+        ('LEO ESPINOSA', 'leoespinosa@gmail.com', '+639367946987', '["Seamster", "Cutter"]', 'Active', '2025-09-30', '2025-10-06 08:09:00'),
+        ('BILGIAN A. MUÑOZ', 'bgoutlookph@gmail.com', '+639631897621', '["Designer", "HT Operator"]', 'Active', '2025-09-30', NULL),
+        ('FLORAMAE DIMPAS', 'test@rfm-prints.com', '+63123456789', '["Cutter"]', 'Active', '2025-10-02', NULL);
+      `;
+      await connection.execute(insertSampleUsers);
+      console.log('✅ Sample users inserted successfully');
+    }
+>>>>>>> signup-dev
     console.log('✅ Database tables initialized successfully');
     
     connection.release();

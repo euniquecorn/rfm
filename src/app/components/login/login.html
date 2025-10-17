@@ -10,31 +10,76 @@
     </div>
 
     <!-- Form -->
+<<<<<<< HEAD
     <form>
+=======
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+      </div>
+
+>>>>>>> signup-dev
       <div class="form-group mb-3">
         <label for="email">Email Address</label>
         <input
           type="email"
           id="email"
+<<<<<<< HEAD
           class="form-control"
           placeholder="Enter your Email"
         />
       </div>
+=======
+          formControlName="email"
+          class="form-control"
+          [class.is-invalid]="email?.invalid && email?.touched"
+          placeholder="Enter your Email"
+        />
+        <div *ngIf="email?.invalid && email?.touched" class="invalid-feedback">
+          <div *ngIf="email?.errors?.['required']">Email is required</div>
+          <div *ngIf="email?.errors?.['email']">Please enter a valid email</div>
+        </div>
+      </div>
+
+>>>>>>> signup-dev
       <div class="form-group mb-4">
         <label for="password">Password</label>
         <input
           type="password"
           id="password"
+<<<<<<< HEAD
           class="form-control"
           placeholder="Enter your Password"
         />
       </div>
       <button type="submit" class="btn btn-login w-100">Login</button>
+=======
+          formControlName="password"
+          class="form-control"
+          [class.is-invalid]="password?.invalid && password?.touched"
+          placeholder="Enter your Password"
+        />
+        <div *ngIf="password?.invalid && password?.touched" class="invalid-feedback">
+          <div *ngIf="password?.errors?.['required']">Password is required</div>
+          <div *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters</div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-login w-100" [disabled]="isLoading">
+        <span *ngIf="!isLoading">Login</span>
+        <span *ngIf="isLoading">Logging in...</span>
+      </button>
+>>>>>>> signup-dev
     </form>
 
     <!-- Footer -->
     <div class="login-footer text-center mt-3">
+<<<<<<< HEAD
       <a href="#" class="create-account">Create an Account</a>
+=======
+      <a routerLink="/signup" class="create-account">Create an Account</a>
+>>>>>>> signup-dev
     </div>
   </div>
 </div>

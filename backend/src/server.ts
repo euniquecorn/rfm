@@ -3,6 +3,11 @@ import cors = require('cors');
 import bodyParser = require('body-parser');
 import { closeDatabase, initializeDatabase, testConnection } from './config/database';
 import canvasRoutes from './routes/canvas.routes';
+<<<<<<< HEAD
+=======
+import usersRoutes from './routes/users.routes';
+import authRoutes from './routes/auth.routes';
+>>>>>>> signup-dev
 import { DatabaseService } from './services/database.service';
 
 const app = express();
@@ -33,7 +38,13 @@ app.get('/api/health', async (req: express.Request, res: express.Response) => {
 });
 
 // API Routes
+<<<<<<< HEAD
 app.use('/api/canvas', canvasRoutes);
+=======
+app.use('/api/auth', authRoutes);
+app.use('/api/canvas', canvasRoutes);
+app.use('/api/users', usersRoutes);
+>>>>>>> signup-dev
 
 // Default route
 app.get('/', (req: express.Request, res: express.Response) => {
@@ -42,12 +53,32 @@ app.get('/', (req: express.Request, res: express.Response) => {
     version: '1.0.0',
     endpoints: {
       health: '/api/health',
+<<<<<<< HEAD
+=======
+      auth: {
+        register: 'POST /api/auth/register',
+        login: 'POST /api/auth/login',
+        logout: 'POST /api/auth/logout',
+        me: 'GET /api/auth/me'
+      },
+>>>>>>> signup-dev
       canvas: {
         save: 'POST /api/canvas/save',
         list: 'GET /api/canvas/list',
         get: 'GET /api/canvas/:id',
         update: 'PUT /api/canvas/:id',
         delete: 'DELETE /api/canvas/:id'
+<<<<<<< HEAD
+=======
+      },
+      users: {
+        list: 'GET /api/users',
+        get: 'GET /api/users/:id',
+        create: 'POST /api/users',
+        update: 'PUT /api/users/:id',
+        delete: 'DELETE /api/users/:id',
+        updateLogin: 'PATCH /api/users/:id/login'
+>>>>>>> signup-dev
       }
     }
   });

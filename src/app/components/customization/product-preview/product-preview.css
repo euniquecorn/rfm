@@ -1,0 +1,426 @@
+.product-preview {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+}
+
+.preview-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  justify-content: flex-start;
+}
+
+.control-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #666;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: #f8f9fa;
+  color: #333;
+  border-color: #ccc;
+}
+
+.control-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #999;
+}
+
+.tshirt-preview {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  min-height: 400px;
+}
+
+.tshirt-container {
+  position: relative;
+  width: 320px;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tshirt-base {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.tshirt-shape {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+/* T-Shirt Structure */
+.collar {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 20px;
+  background: inherit;
+  border-radius: 30px 30px 0 0;
+  border: 2px solid #e0e0e0;
+  border-bottom: none;
+  z-index: 2;
+}
+
+.sleeve {
+  position: absolute;
+  top: 30px;
+  width: 50px;
+  height: 80px;
+  background: inherit;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px;
+}
+
+.sleeve-left {
+  left: -25px;
+  transform: rotate(-10deg);
+}
+
+.sleeve-right {
+  right: -25px;
+  transform: rotate(10deg);
+}
+
+.body {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  right: 25px;
+  bottom: 0;
+  background: inherit;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px 8px 0 0;
+  z-index: 1;
+}
+
+/* Design Area */
+.design-area {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 200px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.design-bounds {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed #007bff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 123, 255, 0.05);
+  position: relative;
+}
+
+.canvas-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.placeholder-content svg {
+  color: #007bff;
+  opacity: 0.5;
+}
+
+.placeholder-text {
+  color: #007bff;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.placeholder-subtext {
+  color: #666;
+  font-size: 12px;
+  margin: 0;
+}
+
+.design-preview {
+  position: absolute;
+  cursor: move;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  transition: border-color 0.2s ease;
+  user-select: none;
+}
+
+.design-preview:hover {
+  border-color: #007bff;
+}
+
+.design-preview.dragging {
+  border-color: #0056b3;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  z-index: 10;
+}
+
+.design-preview.resizing {
+  border-color: #28a745;
+}
+
+.design-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Resize Handles */
+.resize-handles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.design-preview:hover .resize-handles,
+.design-preview.resizing .resize-handles {
+  pointer-events: auto;
+}
+
+.resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #007bff;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  cursor: nw-resize;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.design-preview:hover .resize-handle,
+.design-preview.resizing .resize-handle {
+  opacity: 1;
+}
+
+.resize-handle.nw {
+  top: -4px;
+  left: -4px;
+  cursor: nw-resize;
+}
+
+.resize-handle.ne {
+  top: -4px;
+  right: -4px;
+  cursor: ne-resize;
+}
+
+.resize-handle.sw {
+  bottom: -4px;
+  left: -4px;
+  cursor: sw-resize;
+}
+
+.resize-handle.se {
+  bottom: -4px;
+  right: -4px;
+  cursor: se-resize;
+}
+
+/* Design Info Overlay */
+.design-info {
+  position: absolute;
+  top: -25px;
+  left: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.design-preview:hover .design-info,
+.design-preview.dragging .design-info,
+.design-preview.resizing .design-info {
+  opacity: 1;
+}
+
+.size-info {
+  white-space: nowrap;
+}
+
+/* Grid Overlay */
+.grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.design-preview.dragging ~ .grid-overlay,
+.design-preview.resizing ~ .grid-overlay {
+  opacity: 1;
+}
+
+.grid-line {
+  position: absolute;
+  background: rgba(0, 123, 255, 0.3);
+}
+
+.grid-line.vertical {
+  width: 1px;
+  top: 0;
+  bottom: 0;
+}
+
+.grid-line.horizontal {
+  height: 1px;
+  left: 0;
+  right: 0;
+}
+
+/* View Switcher */
+.view-switcher {
+  display: flex;
+  gap: 4px;
+  background: #f8f9fa;
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.view-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.view-btn:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.view-btn.active {
+  background: #007bff;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+/* Color Variations */
+.tshirt-base[style*="background-color: #000"],
+.tshirt-base[style*="background-color: black"] {
+  .collar,
+  .sleeve,
+  .body {
+    border-color: #333;
+  }
+}
+
+.tshirt-base[style*="background-color: #fff"],
+.tshirt-base[style*="background-color: white"] {
+  .collar,
+  .sleeve,
+  .body {
+    border-color: #e0e0e0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-preview {
+    padding: 16px;
+  }
+  
+  .tshirt-container {
+    width: 280px;
+    height: 330px;
+  }
+  
+  .design-area {
+    width: 150px;
+    height: 170px;
+  }
+  
+  .view-switcher {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .view-btn {
+    flex-shrink: 0;
+    min-width: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tshirt-container {
+    width: 240px;
+    height: 290px;
+  }
+  
+  .design-area {
+    width: 130px;
+    height: 150px;
+  }
+}
