@@ -1,4 +1,20 @@
 <div class="products-container">
+  <!-- Global Messages (Upload Progress, Success, Errors) -->
+  <div *ngIf="message()" class="global-message alert alert-dismissible fade show" 
+       [class.alert-success]="messageType() === 'success'"
+       [class.alert-danger]="messageType() === 'error'"
+       [class.alert-info]="messageType() === 'info'"
+       role="alert">
+    <div class="d-flex align-items-center">
+      <i class="bi me-2" 
+         [class.bi-check-circle-fill]="messageType() === 'success'"
+         [class.bi-exclamation-triangle-fill]="messageType() === 'error'"
+         [class.bi-info-circle-fill]="messageType() === 'info'"></i>
+      <span>{{ message() }}</span>
+      <button type="button" class="btn-close ms-auto" (click)="message.set(''); messageType.set('')" aria-label="Close"></button>
+    </div>
+  </div>
+
   <div class="products-header">
     <button class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addProductModal">
       <i class="bi bi-plus circle me-2"></i>
@@ -18,36 +34,118 @@
               <!-- Product Name -->
               <div class="mb-3">
                 <label class="form-label">Product Name</label>
-                <input type="text" class="form-control" placeholder="Enter product name" required>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="Enter product name" 
+                  [(ngModel)]="productForm.name"
+                  name="productName"
+                  required>
               </div>
     
               <!-- Category -->
               <div class="mb-3">
                 <label class="form-label">Category</label>
-                <input type="text" class="form-control" placeholder="Enter category" required>
+                <select 
+                  class="form-select" 
+                  [(ngModel)]="productForm.category"
+                  name="category"
+                  required>
+                  <option value="">Select clothing category</option>
+                  <option *ngFor="let category of clothingCategories" [value]="category">
+                    {{ category }}
+                  </option>
+                </select>
               </div>
     
               <!-- Base Price -->
               <div class="mb-3">
                 <label class="form-label">Base Price</label>
-                <input type="number" class="form-control" placeholder="Enter base price" required>
+                <div class="input-group">
+                  <span class="input-group-text">₱</span>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    placeholder="0.00" 
+                    name="basePrice"
+                    (input)="onPriceInput($event)"
+                    (focus)="onPriceFocus($event)"
+                    (blur)="onPriceBlur($event)"
+                    required>
+                </div>
+                <small class="form-text text-muted">Enter amount in Philippine Peso (e.g., 25.00)</small>
               </div>
     
               <!-- Description -->
               <div class="mb-3">
                 <label class="form-label">Description</label>
-                <textarea class="form-control" rows="3" placeholder="Enter description"></textarea>
+                <textarea 
+                  class="form-control" 
+                  rows="3" 
+                  placeholder="Enter description"
+                  [(ngModel)]="productForm.description"
+                  name="description"></textarea>
               </div>
 
+              <!-- Upload Product Image -->
               <div class="mb-3">
                 <label class="form-label">Upload Product Image</label>
-                <input type="file" class="form-control" accept="image/*">
+                
+                <!-- Upload Area -->
+                <div *ngIf="!uploadedImageUrl()" class="upload-area">
+                  <input 
+                    type="file" 
+                    class="form-control" 
+                    accept="image/*"
+                    (change)="onFileSelected($event)"
+                    [disabled]="isUploading()">
+                  
+                  <!-- Upload Progress -->
+                  <div *ngIf="isUploading()" class="upload-progress mt-2">
+                    <div class="d-flex align-items-center">
+                      <div class="spinner-border spinner-border-sm me-2" role="status">
+                        <span class="visually-hidden">Uploading...</span>
+                      </div>
+                      <span>Uploading image to Cloudinary...</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Image Preview -->
+                <div *ngIf="uploadedImageUrl()" class="uploaded-image-preview">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                      <img [src]="uploadedImageUrl()" alt="Image preview" class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                      <div>
+                        <small class="text-primary">
+                          <i class="bi bi-image-fill me-1"></i>
+                          Image selected - ready to upload
+                        </small>
+                        <br>
+                        <small class="text-muted">{{ selectedFile() }}</small>
+                      </div>
+                    </div>
+                    <button 
+                      type="button" 
+                      class="btn btn-sm btn-outline-danger" 
+                      (click)="removeSelectedImage()">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
             </form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-primary">Save Product</button>
+            <button 
+              type="button" 
+              class="btn btn-primary" 
+              (click)="onSaveProduct()"
+              [disabled]="isUploading()">
+              <span *ngIf="isUploading()" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isUploading() ? 'Saving...' : 'Save Product' }}
+            </button>
           </div>
         </div>
       </div>
