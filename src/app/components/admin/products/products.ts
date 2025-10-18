@@ -1,13 +1,17 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CloudinaryService, UploadResponse } from '../../../services/cloudinary.service';
+import { ApiService, ProductData } from '../../../services/api';
 
 export interface ProductForm {
   name: string;
   category: string;
   basePrice: string;
   description: string;
+  stockQuantity: number;
+  sku: string;
+  sizes: string[];
   imageUrl: string;
   imageFile: File | null;
 }
@@ -23,12 +27,16 @@ export class AdminProductsComponent implements OnInit {
   protected productForm: ProductForm = {
     name: '',
     category: '',
-    basePrice: '',
+    basePrice: '0',
     description: '',
+    stockQuantity: 0,
+    sku: '',
+    sizes: [],
     imageUrl: '',
     imageFile: null
   };
 
+  protected availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', 'Free Size'];
 
   protected clothingCategories = [
     'T-Shirt',
@@ -63,11 +71,124 @@ export class AdminProductsComponent implements OnInit {
   protected message = signal('');
   protected messageType = signal<'success' | 'error' | 'info' | ''>('');
 
-  constructor(private cloudinaryService: CloudinaryService) {}
+  // Tab and product list signals
+  protected activeTab = signal<'active' | 'archived'>('active');
+  protected activeProducts = signal<ProductData[]>([]);
+  protected archivedProducts = signal<ProductData[]>([]);
+  protected selectedProduct = signal<ProductData | null>(null);
+  protected activeCount = computed(() => this.activeProducts().length);
+  protected archivedCount = computed(() => this.archivedProducts().length);
+
+  constructor(
+    private cloudinaryService: CloudinaryService,
+    private apiService: ApiService
+  ) {}
 
   ngOnInit(): void {
     // Initialize the price field
     this.productForm.basePrice = '0';
+    // Load products on init
+    this.loadProducts();
+  }
+
+  loadProducts(): void {
+    let activeError = false;
+    let archivedError = false;
+
+    // Load active products
+    this.apiService.getProducts(undefined, 'Active').subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.activeProducts.set(response.data);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading active products:', error);
+        activeError = true;
+        if (archivedError) {
+          this.showMessage('Failed to load products. Please check your connection.', 'error');
+        }
+      }
+    });
+
+    // Load archived products
+    this.apiService.getProducts(undefined, 'Archived').subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.archivedProducts.set(response.data);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading archived products:', error);
+        archivedError = true;
+        if (activeError) {
+          this.showMessage('Failed to load products. Please check your connection.', 'error');
+        }
+      }
+    });
+  }
+
+  archiveProduct(productId: number): void {
+    if (!confirm('Are you sure you want to archive this product? You can restore it later.')) {
+      return;
+    }
+
+    this.apiService.archiveProduct(productId.toString()).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.showMessage('Product archived successfully!', 'success');
+          this.loadProducts();
+        } else {
+          this.showMessage('Failed to archive product', 'error');
+        }
+      },
+      error: (error) => {
+        this.showMessage('Failed to archive product', 'error');
+      }
+    });
+  }
+
+  restoreProduct(productId: number): void {
+    this.apiService.restoreProduct(productId.toString()).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.showMessage('Product restored successfully!', 'success');
+          this.loadProducts();
+        } else {
+          this.showMessage('Failed to restore product', 'error');
+        }
+      },
+      error: (error) => {
+        this.showMessage('Failed to restore product', 'error');
+      }
+    });
+  }
+
+  deleteProductPermanently(productId: number): void {
+    if (!confirm('⚠️ WARNING: This will PERMANENTLY delete this product. This action CANNOT be undone. Are you absolutely sure?')) {
+      return;
+    }
+
+    this.apiService.deleteProductPermanently(productId.toString()).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.showMessage('Product permanently deleted', 'success');
+          this.loadProducts();
+        } else {
+          this.showMessage('Failed to delete product', 'error');
+        }
+      },
+      error: (error) => {
+        this.showMessage('Failed to delete product', 'error');
+      }
+    });
+  }
+
+  editProduct(product: ProductData): void {
+    // TODO: Implement edit functionality
+    // This will open the modal with pre-filled data
+    console.log('Edit product:', product);
+    alert('Edit functionality coming soon!');
   }
 
   private showMessage(message: string, type: 'success' | 'error' | 'info'): void {
@@ -75,6 +196,17 @@ export class AdminProductsComponent implements OnInit {
     this.message.set(message);
     this.messageType.set(type);
     console.log('Message set:', this.message(), 'Type set:', this.messageType());
+  }
+
+  onSizeChange(event: Event, size: string): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      if (!this.productForm.sizes.includes(size)) {
+        this.productForm.sizes.push(size);
+      }
+    } else {
+      this.productForm.sizes = this.productForm.sizes.filter(s => s !== size);
+    }
   }
 
   onFileSelected(event: Event): void {
@@ -131,13 +263,13 @@ export class AdminProductsComponent implements OnInit {
   }
 
   async onSaveProduct(): Promise<void> {
-    // Validate required fields (just console log, don't show global message for validation)
+    // Validate required fields
     if (!this.productForm.name || !this.productForm.category || !this.productForm.basePrice) {
       alert('⚠️ Please fill in all required fields (Name, Category, Base Price)');
       return;
     }
 
-    // Validate price format and value
+    // Validate price
     const numericPrice = this.getNumericPrice();
     if (numericPrice <= 0) {
       alert('⚠️ Please enter a valid price greater than ₱0.00');
@@ -151,47 +283,76 @@ export class AdminProductsComponent implements OnInit {
     }
 
     try {
-      // Upload image to Cloudinary first
-      await this.uploadImageToCloudinary(this.productForm.imageFile);
+      // Upload image with product name as filename
+      this.isUploading.set(true);
+      this.showMessage('📤 Uploading image to Cloudinary...', 'info');
       
-      // Check if upload was successful
+      const result = await this.cloudinaryService.uploadImageWithProductName(
+        this.productForm.imageFile!,
+        this.productForm.name
+      );
+      
+      this.productForm.imageUrl = result.secure_url;
+      const cloudinaryPublicId = result.public_id;
+      this.isUploading.set(false);
+
       if (!this.productForm.imageUrl) {
-        return; // Error message already shown by uploadImageToCloudinary
+        return;
       }
 
       // Show saving progress
       this.showMessage('💾 Saving product...', 'info');
 
-      // TODO: Send to your backend API
-      console.log('Saving product:', this.productForm);
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Show success message
-      this.showMessage('✓ Product saved successfully!', 'success');
-      
-      // Wait 3 seconds to show the success message, then reset and close
-      setTimeout(() => {
-        // Reset form data
-        this.resetFormData();
-        
-        // Close modal
-        const modal = document.getElementById('addProductModal');
-        if (modal) {
-          // @ts-ignore
-          bootstrap.Modal.getInstance(modal)?.hide();
+      // Prepare product data
+      const productData = {
+        product_name: this.productForm.name,
+        category: this.productForm.category,
+        base_price: numericPrice,
+        description: this.productForm.description,
+        image_url: this.productForm.imageUrl,
+        cloudinary_public_id: cloudinaryPublicId,
+        status: 'Active' as const,
+        stock_quantity: this.productForm.stockQuantity || 0,
+        sku: this.productForm.sku || null,
+        sizes: this.productForm.sizes.length > 0 ? JSON.stringify(this.productForm.sizes) : null,
+        tags: null
+      };
+
+      // Call API
+      this.apiService.createProduct(productData).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.showMessage('✓ Product saved successfully!', 'success');
+            this.loadProducts();
+            
+            setTimeout(() => {
+              this.resetFormData();
+              const modal = document.getElementById('addProductModal');
+              if (modal) {
+                // @ts-ignore
+                bootstrap.Modal.getInstance(modal)?.hide();
+              }
+              setTimeout(() => {
+                this.message.set('');
+                this.messageType.set('');
+              }, 500);
+            }, 3000);
+          } else {
+            this.showMessage('✗ ' + response.message, 'error');
+          }
+        },
+        error: (error) => {
+          this.showMessage('✗ Failed to save product. Please try again.', 'error');
         }
-        
-        // Clear message after modal closes
-        setTimeout(() => {
-          this.message.set('');
-          this.messageType.set('');
-        }, 500);
-      }, 3000);
-    } catch (error) {
+      });
+    } catch (error: any) {
       console.error('Error saving product:', error);
-      this.showMessage('✗ Failed to save product. Please try again.', 'error');
+      this.isUploading.set(false);
+      if (error.message?.includes('already exists')) {
+        this.showMessage('✗ Product name already exists. Please choose a different name.', 'error');
+      } else {
+        this.showMessage('✗ Failed to save product: ' + error.message, 'error');
+      }
     }
   }
 
@@ -246,6 +407,9 @@ export class AdminProductsComponent implements OnInit {
       category: '',
       basePrice: '0',
       description: '',
+      stockQuantity: 0,
+      sku: '',
+      sizes: [],
       imageUrl: '',
       imageFile: null
     };
@@ -254,6 +418,10 @@ export class AdminProductsComponent implements OnInit {
     this.isUploading.set(false);
     this.message.set('');
     this.messageType.set('');
+    
+    // Uncheck all size checkboxes
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][id^="size-"]');
+    checkboxes.forEach((checkbox: any) => checkbox.checked = false);
   }
 
   private resetFormData(): void {
@@ -262,12 +430,20 @@ export class AdminProductsComponent implements OnInit {
       category: '',
       basePrice: '0',
       description: '',
+      stockQuantity: 0,
+      sku: '',
+      sizes: [],
       imageUrl: '',
       imageFile: null
     };
     this.uploadedImageUrl.set(null);
     this.selectedFile.set(null);
     this.isUploading.set(false);
+    
+    // Uncheck all size checkboxes
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][id^="size-"]');
+    checkboxes.forEach((checkbox: any) => checkbox.checked = false);
+    
     // Don't clear messages here
   }
 
@@ -281,6 +457,69 @@ export class AdminProductsComponent implements OnInit {
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
+    }
+  }
+
+  // View product details
+  viewProductDetails(product: ProductData): void {
+    console.log('Opening product details for:', product);
+    this.selectedProduct.set(product);
+    console.log('Selected product set to:', this.selectedProduct());
+    
+    setTimeout(() => {
+      // @ts-ignore - Bootstrap modal API
+      const modal = new bootstrap.Modal(document.getElementById('productDetailsModal')!);
+      modal.show();
+    }, 0);
+  }
+
+  // Edit product from details modal
+  editProductFromDetails(): void {
+    // Close details modal first
+    const detailsModal = document.getElementById('productDetailsModal');
+    if (detailsModal) {
+      // @ts-ignore
+      bootstrap.Modal.getInstance(detailsModal)?.hide();
+    }
+    
+    // Then call edit with selected product
+    if (this.selectedProduct()) {
+      this.editProduct(this.selectedProduct()!);
+    }
+  }
+
+  // Parse sizes from JSON string
+  getProductSizes(product: ProductData): string[] {
+    if (!product.sizes) return [];
+    
+    try {
+      if (typeof product.sizes === 'string') {
+        return JSON.parse(product.sizes);
+      }
+      if (Array.isArray(product.sizes)) {
+        return product.sizes;
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  }
+
+  // Format date for display
+  formatDate(date: string | undefined): string {
+    if (!date) return 'N/A';
+    
+    try {
+      const d = new Date(date);
+      return d.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return 'Invalid date';
     }
   }
 }
