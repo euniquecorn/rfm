@@ -1,43 +1,94 @@
+/* Overall container */
 .cashflow-container {
+  background: #f8f9fa;
   padding: 24px;
-  background-color: #f8f9fa;
+  border-radius: 10px;
   min-height: 100vh;
 }
 
-.cashflow-header {
-  margin-bottom: 32px;
-}
-
+/* Header */
 .cashflow-header h2 {
-  font-size: 28px;
   font-weight: 600;
+  font-size: 1.75rem;
+  margin: 0;
   color: #2c3e50;
-  margin: 0 0 8px 0;
 }
 
 .cashflow-header p {
-  font-size: 16px;
   color: #7f8c8d;
-  margin: 0;
+  margin: 4px 0 0;
 }
 
-.cashflow-content {
-  background-color: white;
-  border-radius: 8px;
-  padding: 40px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Custom Date Display */
+.date-controls {
+  position: relative;
+}
+
+.date-display {
+  font-size: 1rem;
+  color: #0d6efd;
+  cursor: pointer;
+  font-weight: 500;
+  border-bottom: 1px dashed transparent;
+  transition: 0.2s;
+}
+
+.date-display:hover {
+  color: #0a58ca;
+  border-bottom: 1px dashed #0a58ca;
+}
+
+.date-controls .hidden-inputs input[type="date"] {
+  display: none;
+}
+
+/* Summary cards */
+.summary-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
   text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
 }
 
-.placeholder-message h3 {
-  font-size: 24px;
+.summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.summary-card h5 {
   font-weight: 600;
-  color: #34495e;
-  margin: 0 0 16px 0;
+  margin-bottom: 8px;
 }
 
-.placeholder-message p {
-  font-size: 16px;
-  color: #7f8c8d;
+.summary-card h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.summary-card p {
+  color: #6c757d;
+  font-size: 0.9rem;
   margin: 0;
+}
+
+.net-flow.negative {
+  background: #fff5f5;
+}
+
+/* Ledger table */
+.table thead {
+  background-color: #f1f3f5;
+  font-weight: 600;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+/* Loading */
+.loading-state p {
+  color: #6c757d;
 }

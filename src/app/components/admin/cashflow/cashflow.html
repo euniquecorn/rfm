@@ -1,14 +1,104 @@
 <div class="cashflow-container">
-  <div class="cashflow-header">
-    <h2>Cash Flow Management</h2>
-    <p>Monitor and analyze financial performance</p>
+  <!-- HEADER -->
+  <div class="cashflow-header d-flex align-items-center justify-content-between flex-wrap">
+    <div class="mb-3 mb-md-0">
+      <h2><i class="fas fa-coins me-2 text-success"></i> Cash Flow Overview</h2>
+      <p>Track your inflows and outflows within a selected date range.</p>
+    </div>
+
+    <!-- Custom Date Range (fixed: use template refs instead of `document`) -->
+    <div class="date-controls">
+      <span class="date-display" role="button" (click)="startDateInput.click()">
+        <i class="fas fa-calendar-alt me-2 text-primary"></i>
+        {{ dateRangeDisplay }}
+        <i class="fas fa-caret-down ms-2 text-muted"></i>
+      </span>
+    
+      <!-- Hidden Inputs with template refs -->
+      <div class="hidden-inputs">
+        <input #startDateInput type="date" [(ngModel)]="startDate" id="start-date-trigger" (change)="fetchCashFlow()">
+        <input #endDateInput type="date" [(ngModel)]="endDate" id="end-date-trigger" (change)="fetchCashFlow()">
+      </div>
+    </div>
+
+
+  <!-- LOADING / ERROR STATES -->
+  <div *ngIf="isLoading" class="loading-state text-center py-5">
+    <i class="fas fa-spinner fa-spin fa-2x text-secondary mb-2"></i>
+    <p>Loading financial data...</p>
   </div>
-  
-  <div class="cashflow-content">
-    <!-- Placeholder content for cashflow -->
-    <div class="placeholder-message">
-      <h3>Cash Flow Content</h3>
-      <p>This page is ready for cash flow management implementation</p>
+
+  <div *ngIf="error" class="alert alert-danger text-center mt-3">
+    <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div *ngIf="reportData && !isLoading" class="summary-cards row g-4 mt-2">
+    <div class="col-md-4">
+      <div class="summary-card cash-in">
+        <h5><i class="fas fa-arrow-down me-2 text-success"></i>Total Cash In</h5>
+        <h2>{{ reportData.totalCashIn | currency:'USD':'symbol' }}</h2>
+        <p>Revenue & Sales</p>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="summary-card cash-out">
+        <h5><i class="fas fa-arrow-up me-2 text-danger"></i>Total Cash Out</h5>
+        <h2>{{ reportData.totalCashOut | currency:'USD':'symbol' }}</h2>
+        <p>Expenses</p>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="summary-card net-flow" [class.negative]="reportData.netFlow < 0">
+        <h5><i class="fas fa-chart-line me-2 text-primary"></i>Net Cash Flow</h5>
+        <h2 [ngClass]="{
+              'text-danger': reportData.netFlow < 0,
+              'text-success': reportData.netFlow >= 0
+            }">
+          {{ reportData.netFlow | currency:'USD':'symbol' }}
+        </h2>
+        <p>Profit / Loss</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEDGER -->
+  <div *ngIf="!isLoading" class="ledger-section mt-5">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h4><i class="fas fa-list-alt me-2 text-primary"></i> Ledger ({{ dateRangeDisplay }})</h4>
+    </div>
+
+    <div *ngIf="ledgerData.length === 0" class="alert alert-info text-center mt-3">
+      <i class="fas fa-info-circle me-2"></i>No cash flow records found for this date range.
+    </div>
+
+    <div class="table-responsive" *ngIf="ledgerData.length > 0">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th class="text-end">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let entry of ledgerData" [class.table-success]="entry.type === 'IN'"
+            [class.table-danger]="entry.type === 'OUT'">
+            <td>{{ entry.date | date:'mediumDate' }}</td>
+            <td>
+              <span class="badge rounded-pill"
+                [ngClass]="{'bg-success': entry.type === 'IN', 'bg-danger': entry.type === 'OUT'}">
+                {{ entry.type }}
+              </span>
+            </td>
+            <td>{{ entry.description }}</td>
+            <td class="text-end fw-semibold">{{ entry.amount | currency:'USD':'symbol' }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

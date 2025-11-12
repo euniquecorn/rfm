@@ -7,13 +7,14 @@ import express from 'express';
 import { closeDatabase, initializeDatabase, testConnection } from './config/database';
 import authRoutes from './routes/auth.routes';
 import canvasRoutes from './routes/canvas.routes';
+import cartRoutes from './routes/cart.routes';
 import catalogRoutes from './routes/catalog.routes';
 import customizableProductsRoutes from './routes/customizable-products.routes';
-import usersRoutes from './routes/users.routes';
-import cartRoutes from './routes/cart.routes';
+import financeRoutes from './routes/finance.routes';
+import inventoryRoutes from './routes/inventory.routes';
 import ordersRoutes from './routes/orders.routes';
 import paymentRoutes from './routes/payment.routes';
-import inventoryRoutes from './routes/inventory.routes';
+import usersRoutes from './routes/users.routes';
 import { DatabaseService } from './services/database.service';
 import { EmailService } from './services/email.service';
 
@@ -61,6 +62,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/finance', financeRoutes);
 
 // Default route
 app.get('/', (req: express.Request, res: express.Response) => {

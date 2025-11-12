@@ -21,7 +21,8 @@ const appRoutes: Routes = [
   ],
   imports: [
     BrowserModule,
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes),
+    
   ],
   providers: [
     // Providers are configured in app.config.ts for standalone components
