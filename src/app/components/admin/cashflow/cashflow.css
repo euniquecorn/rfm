@@ -92,3 +92,24 @@
 .loading-state p {
   color: #6c757d;
 }
+
+.quick-range-dropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.5rem 0;
+  width: 190px;
+  z-index: 999;
+}
+
+.quick-range-dropdown ul li {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.quick-range-dropdown ul li:hover {
+  background: #f0f4ff;
+}

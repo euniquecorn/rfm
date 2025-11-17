@@ -1,82 +1,122 @@
-<div class="cashflow-container">
+<div class="cashflow-container container py-4">
+
   <!-- HEADER -->
-  <div class="cashflow-header d-flex align-items-center justify-content-between flex-wrap">
-    <div class="mb-3 mb-md-0">
-      <h2><i class="fas fa-coins me-2 text-success"></i> Cash Flow Overview</h2>
-      <p>Track your inflows and outflows within a selected date range.</p>
+  <div class="cashflow-header d-flex align-items-center justify-content-between flex-wrap mb-4">
+    <div class="header-left">
+      <h2 class="fw-bold mb-1">
+        <i class="fas fa-coins me-2 text-success"></i>
+        Cash Flow Overview
+      </h2>
+      <p class="text-muted mb-0">Monitor and analyze financial movements between selected dates.</p>
     </div>
 
-    <!-- Custom Date Range (fixed: use template refs instead of `document`) -->
-    <div class="date-controls">
-      <span class="date-display" role="button" (click)="startDateInput.click()">
+    <!-- DATE RANGE WITH QUICK MENU -->
+    <div class="date-controls mt-3 mt-md-0 position-relative">
+
+      <!-- Main Button -->
+      <button class="date-picker-btn d-flex align-items-center" (click)="toggleQuickRange()">
         <i class="fas fa-calendar-alt me-2 text-primary"></i>
-        {{ dateRangeDisplay }}
-        <i class="fas fa-caret-down ms-2 text-muted"></i>
-      </span>
-    
-      <!-- Hidden Inputs with template refs -->
-      <div class="hidden-inputs">
-        <input #startDateInput type="date" [(ngModel)]="startDate" id="start-date-trigger" (change)="fetchCashFlow()">
-        <input #endDateInput type="date" [(ngModel)]="endDate" id="end-date-trigger" (change)="fetchCashFlow()">
+        <span>{{ dateRangeDisplay }}</span>
+        <i class="fas fa-chevron-down ms-2"></i>
+      </button>
+
+      <!-- Quick Range Dropdown -->
+      <div class="quick-range-dropdown shadow-sm" *ngIf="showQuickRange">
+        <ul class="list-unstyled mb-0">
+          <li (click)="setQuickRange('today')">Today</li>
+          <li (click)="setQuickRange('yesterday')">Yesterday</li>
+          <li (click)="setQuickRange('last7')">Last 7 Days</li>
+          <li (click)="setQuickRange('last30')">Last 30 Days</li>
+          <li (click)="setQuickRange('thisMonth')">This Month</li>
+          <li (click)="setQuickRange('lastMonth')">Last Month</li>
+          <li class="custom-range" (click)="triggerDateRange()">Custom Range…</li>
+        </ul>
       </div>
+
+      <!-- Hidden Inputs -->
+      <input #startDateInput id="start-date-ref" type="date" class="d-none" [(ngModel)]="startDate"
+        (change)="openEndDate()" />
+
+      <input #endDateInput id="end-date-ref" type="date" class="d-none" [(ngModel)]="endDate"
+        (change)="fetchCashFlow()" />
     </div>
-
-
-  <!-- LOADING / ERROR STATES -->
-  <div *ngIf="isLoading" class="loading-state text-center py-5">
-    <i class="fas fa-spinner fa-spin fa-2x text-secondary mb-2"></i>
-    <p>Loading financial data...</p>
   </div>
 
-  <div *ngIf="error" class="alert alert-danger text-center mt-3">
-    <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+  <!-- LOADING STATE -->
+  <div *ngIf="isLoading" class="loading-state text-center py-5">
+    <i class="fas fa-spinner fa-spin fa-2x text-secondary mb-2"></i>
+    <p class="text-muted">Fetching financial data...</p>
+  </div>
+
+  <!-- ERROR MESSAGE -->
+  <div *ngIf="error" class="alert alert-danger text-center">
+    <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
   </div>
 
   <!-- SUMMARY CARDS -->
-  <div *ngIf="reportData && !isLoading" class="summary-cards row g-4 mt-2">
+  <div *ngIf="reportData && !isLoading" class="row g-4">
     <div class="col-md-4">
-      <div class="summary-card cash-in">
-        <h5><i class="fas fa-arrow-down me-2 text-success"></i>Total Cash In</h5>
-        <h2>{{ reportData.totalCashIn | currency:'USD':'symbol' }}</h2>
-        <p>Revenue & Sales</p>
+      <div class="summary-card shadow-sm">
+        <h6 class="text-muted mb-1">
+          <i class="fas fa-arrow-down text-success me-2"></i>
+          Total Cash In
+        </h6>
+        <h2 class="fw-bold text-success">
+          {{ reportData.totalCashIn | currency:'USD':'symbol' }}
+        </h2>
+        <p class="card-subtext">Revenue & Collections</p>
       </div>
     </div>
 
     <div class="col-md-4">
-      <div class="summary-card cash-out">
-        <h5><i class="fas fa-arrow-up me-2 text-danger"></i>Total Cash Out</h5>
-        <h2>{{ reportData.totalCashOut | currency:'USD':'symbol' }}</h2>
-        <p>Expenses</p>
+      <div class="summary-card shadow-sm">
+        <h6 class="text-muted mb-1">
+          <i class="fas fa-arrow-up text-danger me-2"></i>
+          Total Cash Out
+        </h6>
+        <h2 class="fw-bold text-danger">
+          {{ reportData.totalCashOut | currency:'USD':'symbol' }}
+        </h2>
+        <p class="card-subtext">Operational Expenses</p>
       </div>
     </div>
 
     <div class="col-md-4">
-      <div class="summary-card net-flow" [class.negative]="reportData.netFlow < 0">
-        <h5><i class="fas fa-chart-line me-2 text-primary"></i>Net Cash Flow</h5>
-        <h2 [ngClass]="{
-              'text-danger': reportData.netFlow < 0,
-              'text-success': reportData.netFlow >= 0
-            }">
+      <div class="summary-card shadow-sm">
+        <h6 class="text-muted mb-1">
+          <i class="fas fa-chart-line text-primary me-2"></i>
+          Net Cash Flow
+        </h6>
+        <h2 class="fw-bold" [ngClass]="{
+            'text-success': reportData.netFlow >= 0,
+            'text-danger': reportData.netFlow < 0
+          }">
           {{ reportData.netFlow | currency:'USD':'symbol' }}
         </h2>
-        <p>Profit / Loss</p>
+        <p class="card-subtext">Profit / Loss Position</p>
       </div>
     </div>
   </div>
 
-  <!-- LEDGER -->
+  <!-- LEDGER SECTION -->
   <div *ngIf="!isLoading" class="ledger-section mt-5">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <h4><i class="fas fa-list-alt me-2 text-primary"></i> Ledger ({{ dateRangeDisplay }})</h4>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="fw-semibold mb-0">
+        <i class="fas fa-list-alt me-2 text-primary"></i>
+        Ledger Records
+      </h4>
     </div>
 
-    <div *ngIf="ledgerData.length === 0" class="alert alert-info text-center mt-3">
-      <i class="fas fa-info-circle me-2"></i>No cash flow records found for this date range.
+    <!-- No Data -->
+    <div *ngIf="ledgerData.length === 0" class="alert alert-info text-center">
+      <i class="fas fa-info-circle me-2"></i>
+      No ledger entries for this date range.
     </div>
 
-    <div class="table-responsive" *ngIf="ledgerData.length > 0">
+    <!-- Table -->
+    <div *ngIf="ledgerData.length > 0" class="table-responsive">
       <table class="table table-hover align-middle">
-        <thead class="table-light">
+        <thead class="table-light border-0">
           <tr>
             <th>Date</th>
             <th>Type</th>
@@ -87,18 +127,26 @@
         <tbody>
           <tr *ngFor="let entry of ledgerData" [class.table-success]="entry.type === 'IN'"
             [class.table-danger]="entry.type === 'OUT'">
+
             <td>{{ entry.date | date:'mediumDate' }}</td>
+
             <td>
-              <span class="badge rounded-pill"
-                [ngClass]="{'bg-success': entry.type === 'IN', 'bg-danger': entry.type === 'OUT'}">
+              <span class="badge px-3 py-2 rounded-pill" [ngClass]="{ 'bg-success': entry.type === 'IN',
+                                 'bg-danger': entry.type === 'OUT' }">
                 {{ entry.type }}
               </span>
             </td>
+
             <td>{{ entry.description }}</td>
-            <td class="text-end fw-semibold">{{ entry.amount | currency:'USD':'symbol' }}</td>
+
+            <td class="text-end fw-semibold">
+              {{ entry.amount | currency:'USD':'symbol' }}
+            </td>
+
           </tr>
         </tbody>
       </table>
     </div>
+
   </div>
 </div>
